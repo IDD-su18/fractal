@@ -12,12 +12,12 @@ import android.view.ViewGroup;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ScanFragment.OnScanFragmentInteractionListener} interface
+ * {@link MonitorFragment.OnMonitorFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ScanFragment#newInstance} factory method to
+ * Use the {@link MonitorFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ScanFragment extends Fragment {
+public class MonitorFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -27,9 +27,9 @@ public class ScanFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private OnScanFragmentInteractionListener mListener;
+    private OnMonitorFragmentInteractionListener mListener;
 
-    public ScanFragment() {
+    public MonitorFragment() {
         // Required empty public constructor
     }
 
@@ -39,11 +39,11 @@ public class ScanFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment ScanFragment.
+     * @return A new instance of fragment MonitorFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ScanFragment newInstance(String param1, String param2) {
-        ScanFragment fragment = new ScanFragment();
+    public static MonitorFragment newInstance(String param1, String param2) {
+        MonitorFragment fragment = new MonitorFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -64,24 +64,24 @@ public class ScanFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_scan, container, false);
+        return inflater.inflate(R.layout.fragment_monitor, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onScanFragmentInteraction(uri);
+            mListener.onMonitorFragmentInteraction(uri);
         }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnScanFragmentInteractionListener) {
-            mListener = (OnScanFragmentInteractionListener) context;
+        if (context instanceof OnMonitorFragmentInteractionListener) {
+            mListener = (OnMonitorFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnScanFragmentInteractionListener");
+                    + " must implement OnFragmentInteractionListener");
         }
     }
 
@@ -101,8 +101,8 @@ public class ScanFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnScanFragmentInteractionListener {
+    public interface OnMonitorFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onScanFragmentInteraction(Uri uri);
+        void onMonitorFragmentInteraction(Uri uri);
     }
 }
