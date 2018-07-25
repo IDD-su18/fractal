@@ -44,7 +44,43 @@
             android:textColor="@color/green"
             android:textSize="16dp"
             />
+
     </LinearLayout>
+    <CheckBox
+        android:id="@+id/newline"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:text="Insert NewLine on Send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="@dimen/activity_horizontal_margin">
+
+
+        <EditText
+            android:id="@+id/input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="text to send                      "/>
+        <Button
+            android:id="@+id/send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="send"
+            android:onClick="sendClick"
+            />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/messages"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="monospace"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:textColor="@color/colorPrimary"/>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/recording_ll"
