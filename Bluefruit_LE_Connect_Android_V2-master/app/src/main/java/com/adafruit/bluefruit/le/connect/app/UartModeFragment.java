@@ -283,6 +283,7 @@ public class UartModeFragment extends UartBaseFragment {
                 }
             }
         } else {
+            // TODO: send based off spinner
             BlePeripheralUart blePeripheralUart = mBlePeripheralsUart.get(0);
             uartData.send(blePeripheralUart, message);
         }

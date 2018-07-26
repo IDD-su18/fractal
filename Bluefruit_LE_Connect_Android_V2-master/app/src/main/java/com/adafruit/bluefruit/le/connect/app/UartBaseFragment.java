@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -53,7 +54,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public abstract class UartBaseFragment extends ConnectedPeripheralFragment implements UartPacketManagerBase.Listener, MqttManager.MqttManagerListener {
+public abstract class UartBaseFragment extends ConnectedPeripheralFragment implements UartPacketManagerBase.Listener, MqttManager.MqttManagerListener, AdapterView.OnItemSelectedListener {
     // Log
     private final static String TAG = UartBaseFragment.class.getSimpleName();
 
@@ -76,6 +77,8 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
     private Button mSendButton;
     private MenuItem mMqttMenuItem;
     private Handler mMqttMenuItemAnimationHandler;
+
+    String selectedSpinnerNumber = "0";
 
 
 
@@ -141,6 +144,7 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
 
         // Buffer recycler view
         if (context != null) {
@@ -459,6 +463,17 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
 
     // endregion
 
+    public void onItemSelected(AdapterView<?> parent, View view,
+                               int pos, long id) {
+        // An item was selected. You can retrieve the selected item using
+        // parent.getItemAtPosition(pos)
+        selectedSpinnerNumber = parent.getItemAtPosition(pos).toString();
+    }
+
+    public void onNothingSelected(AdapterView<?> parent) {
+        // Another interface callback
+    }
+
     // region Uart
     protected abstract void setupUart();
 
@@ -469,12 +484,11 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
         mSendEditText.setText("");       // Clear editText
 
         // Add eol
-        if (mIsEolEnabled) {
-            // Add newline character if checked
-            newText += getEolCharacters();
-        }
 
-        send(newText);
+
+
+
+        send(selectedSpinnerNumber);
     }
 
     // endregion
