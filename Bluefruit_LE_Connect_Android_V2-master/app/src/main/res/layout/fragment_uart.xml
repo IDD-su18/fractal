@@ -43,11 +43,24 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:text="75%"
-            android:textColor="@color/green_50"
-            android:textSize="16dp"
+            android:textColor="@color/green_900"
+            android:textSize="16dp"/>
+            />
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:text="  (not implemented)"
+
+            android:textSize="12dp"
             />
 
     </LinearLayout>
+
+
+
+
 
 
     <LinearLayout
@@ -56,40 +69,15 @@
         android:orientation="horizontal"
         android:layout_margin="@dimen/activity_horizontal_margin">
 
-
-        <EditText
-            android:id="@+id/input"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="text to send                      "/>
-        <Button
-            android:id="@+id/send"
+            android:text="tone id:"/>
+
+        <Spinner
+            android:id="@+id/sounds_spinner"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="send"/>
-            //android:onClick="sendClick"
-
-    </LinearLayout>
-
-    <Spinner
-        android:id="@+id/sounds_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/sendEditText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:inputType="textNoSuggestions|textVisiblePassword"
-            android:scrollbarAlwaysDrawVerticalTrack="true"
-            android:scrollbars="vertical"
-            android:singleLine="false" />
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/sendButton"
@@ -98,6 +86,17 @@
             android:text="@string/uart_send_action" />
 
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/recording_ll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="bottom"
+        android:layout_margin="@dimen/activity_horizontal_margin">
+
+    </LinearLayout>
+
 
     <!--<LinearLayout-->
         <!--android:layout_width="wrap_content"-->

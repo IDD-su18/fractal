@@ -1,28 +1,32 @@
 package com.adafruit.bluefruit.le.connect.app;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SimpleItemAnimator;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,6 +40,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -48,6 +53,7 @@ import com.adafruit.bluefruit.le.connect.mqtt.MqttManager;
 import com.adafruit.bluefruit.le.connect.mqtt.MqttSettings;
 import com.adafruit.bluefruit.le.connect.utils.KeyboardUtils;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -71,14 +77,24 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
     private final static String kPreferences_timestampDisplayMode = "timestampdisplaymode";
 
     // UI
-//    private EditText mBufferTextView;
-    protected TimestampItemAdapter mBufferItemAdapter;
-    private EditText mSendEditText;
     private Button mSendButton;
     private MenuItem mMqttMenuItem;
     private Handler mMqttMenuItemAnimationHandler;
 
+
+    // custom
+    private static final String LOG_TAG = "AudioRecordTest";
+    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+    private static String mFileName;
+
     String selectedSpinnerNumber = "0";
+    private RecordButton mRecordButton;
+    private MediaRecorder mRecorder;
+
+    private PlayButton mPlayButton;
+    private MediaPlayer mPlayer;
+
+    private TextView titleTextView;
 
 
 
@@ -146,8 +162,35 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
+
+        //** AUDIO STUFF **//
+
+        // Record to the external cache directory for visibility
+        mFileName = getActivity().getExternalCacheDir().getAbsolutePath();
+        mFileName += "/audiorecordtest.3gp";
+
+        ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_RECORD_AUDIO_PERMISSION);
+        titleTextView = (TextView) view.findViewById(R.id.title);
+        LinearLayout ll = (LinearLayout) view.findViewById(R.id.recording_ll);
+        mRecordButton = new RecordButton(context);
+
+
+
+
         // Buffer recycler view
         if (context != null) {
+
+            ll.addView(mRecordButton,
+                    new LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            0));
+            mPlayButton = new PlayButton(context);
+            ll.addView(mPlayButton,
+                    new LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            0));
 
             DividerItemDecoration itemDecoration = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
             Drawable lineSeparatorDrawable = ContextCompat.getDrawable(context, R.drawable.simpledivideritemdecoration);
@@ -167,21 +210,6 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
 //            mBufferTextView.setKeyListener(null);     // make it not editable
 //        }
 
-        // Send Text
-        mSendEditText = view.findViewById(R.id.sendEditText);
-        mSendEditText.setOnEditorActionListener((textView, actionId, keyEvent) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEND) {
-                onClickSend();
-                return true;
-            }
-            return false;
-        });
-        mSendEditText.setOnFocusChangeListener((view1, hasFocus) -> {
-            if (!hasFocus) {
-                // Dismiss keyboard when sendEditText loses focus
-                KeyboardUtils.dismissKeyboard(view1);
-            }
-        });
 
         mSendButton = view.findViewById(R.id.sendButton);
         mSendButton.setOnClickListener(view12 -> onClickSend());
@@ -480,14 +508,6 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
     protected abstract void send(String message);
 
     private void onClickSend() {
-        String newText = mSendEditText.getText().toString();
-        mSendEditText.setText("");       // Clear editText
-
-        // Add eol
-
-
-
-
         send(selectedSpinnerNumber);
     }
 
@@ -495,9 +515,7 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
 
     // region UI
     protected void updateUartReadyUI(boolean isReady) {
-        if (mSendEditText != null) {
-            mSendEditText.setEnabled(isReady);
-            //mSendEditText.setBackgroundColor(isReady ? Color.TRANSPARENT : 0x20000000);
+        if (mSendButton != null) {
             mSendButton.setEnabled(isReady);
         }
 
@@ -538,24 +556,24 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
         if (mPacketsCacheLastSize != packetsCacheSize) {        // Only if the buffer has changed
 
 
-                if (packetsCacheSize > maxPacketsToPaintAsText) {
-                    mPacketsCacheLastSize = packetsCacheSize - maxPacketsToPaintAsText;
-                    mTextSpanBuffer.clear();
-                    addTextToSpanBuffer(mTextSpanBuffer, getString(R.string.uart_text_dataomitted) + "\n", kInfoColor, false);
-                }
-
-                // Log.d(TAG, "update packets: "+(bufferSize-mPacketsCacheLastSize));
-                for (int i = mPacketsCacheLastSize; i < packetsCacheSize; i++) {
-                    final UartPacket packet = packetsCache.get(i);
-                    onUartPacketText(packet);
-                }
-
-                //mBufferTextView.setText(mTextSpanBuffer);
-               // mBufferTextView.setSelection(0, mTextSpanBuffer.length());        // to automatically scroll to the end
+            if (packetsCacheSize > maxPacketsToPaintAsText) {
+                mPacketsCacheLastSize = packetsCacheSize - maxPacketsToPaintAsText;
+                mTextSpanBuffer.clear();
+                addTextToSpanBuffer(mTextSpanBuffer, getString(R.string.uart_text_dataomitted) + "\n", kInfoColor, false);
             }
 
-            mPacketsCacheLastSize = packetsCacheSize;
+            // Log.d(TAG, "update packets: "+(bufferSize-mPacketsCacheLastSize));
+            for (int i = mPacketsCacheLastSize; i < packetsCacheSize; i++) {
+                final UartPacket packet = packetsCache.get(i);
+                onUartPacketText(packet);
+            }
+
+            //mBufferTextView.setText(mTextSpanBuffer);
+            // mBufferTextView.setSelection(0, mTextSpanBuffer.length());        // to automatically scroll to the end
         }
+
+        mPacketsCacheLastSize = packetsCacheSize;
+    }
 
 
 
@@ -775,6 +793,145 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
             return mTableCachedDataBuffer.size();
         }
     }
+
+
+
+    public class RecordButton extends Button {
+        boolean mStartRecording = true;
+
+        OnClickListener clicker = new OnClickListener() {
+            public void onClick(View v) {
+                onRecord(mStartRecording);
+                if (mStartRecording) {
+                    titleTextView.setText("Scan in progress");
+                    setText("Stop recording");
+                } else {
+                    titleTextView.setText("Scan complete");
+                    setText("Start recording");
+                }
+                mStartRecording = !mStartRecording;
+            }
+        };
+
+        public RecordButton(Context ctx) {
+            super(ctx);
+            setText("Start recording");
+            setOnClickListener(clicker);
+        }
+    }
+
+
+
+    class PlayButton extends Button {
+        boolean mStartPlaying = true;
+
+        OnClickListener clicker = new OnClickListener() {
+            public void onClick(View v) {
+                onPlay(mStartPlaying);
+                if (mStartPlaying) {
+                    setText("Stop playing");
+                } else {
+                    setText("Start playing");
+                }
+                mStartPlaying = !mStartPlaying;
+            }
+        };
+
+        public PlayButton(Context ctx) {
+            super(ctx);
+            setText("Start playing");
+            setOnClickListener(clicker);
+        }
+
+    }
+
+
+
+    // Requesting permission to RECORD_AUDIO
+    private boolean permissionToRecordAccepted = false;
+    private String [] permissions = {Manifest.permission.RECORD_AUDIO};
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case REQUEST_RECORD_AUDIO_PERMISSION:
+                permissionToRecordAccepted  = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                break;
+        }
+        // return was finish before, hopefully this doesnt mess w/ things
+        if (!permissionToRecordAccepted ) return;
+
+    }
+
+    private void onRecord(boolean start) {
+        if (start) {
+
+            startRecording();
+        } else {
+            stopRecording();
+        }
+    }
+
+    private void onPlay(boolean start) {
+        if (start) {
+            startPlaying();
+        } else {
+            stopPlaying();
+        }
+    }
+
+    private void startPlaying() {
+        mPlayer = new MediaPlayer();
+        try {
+            mPlayer.setDataSource(mFileName);
+            mPlayer.prepare();
+            mPlayer.start();
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "prepare() failed");
+        }
+    }
+
+    private void stopPlaying() {
+        mPlayer.release();
+        mPlayer = null;
+    }
+
+    private void startRecording() {
+        mRecorder = new MediaRecorder();
+        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mRecorder.setOutputFile(mFileName);
+        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+        try {
+            mRecorder.prepare();
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "prepare() failed");
+        }
+
+        mRecorder.start();
+    }
+
+    private void stopRecording() {
+        mRecorder.stop();
+        mRecorder.release();
+        mRecorder = null;
+    }
+
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mRecorder != null) {
+            mRecorder.release();
+            mRecorder = null;
+        }
+
+        if (mPlayer != null) {
+            mPlayer.release();
+            mPlayer = null;
+        }
+    }
 }
 
-    // endregion

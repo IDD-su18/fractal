@@ -6,6 +6,11 @@
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
 
+
+
+    <!-- Audio Permission -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <!-- Bluetooth Permissions -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />

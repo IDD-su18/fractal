@@ -44,21 +44,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothLeUart.C
     private Button   send;
     private CheckBox newline;
 
-    // Bluetooth LE UART instance.  This is defined in BluetoothLeUart.java.
-    private BluetoothLeUart uart;
 
-    // Write some text to the messages text view.
-    // Care is taken to do this on the main UI thread so writeLine can be called from any thread
-    // (like the BTLE callback).
-    private void writeLine(final CharSequence text) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                messages.append(text);
-                messages.append("\n");
-            }
-        });
-    }
 
 
     // Handler for mouse click on the send button.
