@@ -75,19 +75,7 @@ public class UartModeFragment extends UartBaseFragment {
         if (context != null) {
             final boolean isInMultiUartMode = isInMultiUartMode();
 
-            if (isInMultiUartMode) {
-                mSendPeripheralSpinner.setAdapter(new PeripheralSelectorAdapter(context, mBlePeripheralsUart));
-                mSendPeripheralSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
-                        mMultiUartSendToPeripheralIdentifier = mBlePeripheralsUart.get(pos).getIdentifier();
-                    }
 
-                    @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {
-                    }
-                });
-            }
         }
 
         // Setup Uart
@@ -189,7 +177,7 @@ public class UartModeFragment extends UartBaseFragment {
             return;
         }
         mUartData = new UartPacketManager(context, this, true, mMqttManager);           // Note: mqttmanager should have been initialized previously
-        mBufferItemAdapter.setUartData(mUartData);
+
 
         // Colors assigned to peripherals
         final int[] colors = UartStyle.defaultColors();

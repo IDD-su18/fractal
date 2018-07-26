@@ -51,6 +51,7 @@ public class PeripheralModulesFragment extends ConnectedPeripheralFragment {
 
     // Data
     private PeripheralModulesFragmentListener mListener;
+
     private List<BlePeripheralBattery> mBatteryPeripherals = new ArrayList<>();
 
     // region Fragment Lifecycle

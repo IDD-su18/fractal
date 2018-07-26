@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -69,16 +70,14 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
     private final static String kPreferences_timestampDisplayMode = "timestampdisplaymode";
 
     // UI
-    private EditText mBufferTextView;
-    private RecyclerView mBufferRecylerView;
+//    private EditText mBufferTextView;
     protected TimestampItemAdapter mBufferItemAdapter;
     private EditText mSendEditText;
     private Button mSendButton;
     private MenuItem mMqttMenuItem;
     private Handler mMqttMenuItemAnimationHandler;
-    private TextView mSentBytesTextView;
-    private TextView mReceivedBytesTextView;
-    protected Spinner mSendPeripheralSpinner;
+
+
 
     // UI TextBuffer (refreshing the text buffer is managed with a timer because a lot of changes can arrive really fast and could stall the main thread)
     private Handler mUIRefreshTimerHandler = new Handler();
@@ -131,30 +130,38 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
 
         final Context context = getContext();
 
+        // Setup Uart
+        setupUart();
+
+        Spinner spinner = (Spinner) view.findViewById(R.id.sounds_spinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(context,
+                R.array.sound_indices, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+
         // Buffer recycler view
         if (context != null) {
-            mBufferRecylerView = view.findViewById(R.id.bufferRecyclerView);
+
             DividerItemDecoration itemDecoration = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
             Drawable lineSeparatorDrawable = ContextCompat.getDrawable(context, R.drawable.simpledivideritemdecoration);
             assert lineSeparatorDrawable != null;
             itemDecoration.setDrawable(lineSeparatorDrawable);
-            mBufferRecylerView.addItemDecoration(itemDecoration);
+
 
             LinearLayoutManager layoutManager = new LinearLayoutManager(context);
             //layoutManager.setStackFromEnd(true);        // Scroll to bottom when adding elements
-            mBufferRecylerView.setLayoutManager(layoutManager);
 
-            ((SimpleItemAnimator) mBufferRecylerView.getItemAnimator()).setSupportsChangeAnimations(false);         // Disable update animation
-            mBufferItemAdapter = new TimestampItemAdapter(context);            // Adapter
 
-            mBufferRecylerView.setAdapter(mBufferItemAdapter);
         }
 
         // Buffer
-        mBufferTextView = view.findViewById(R.id.bufferTextView);
-        if (mBufferTextView != null) {
-            mBufferTextView.setKeyListener(null);     // make it not editable
-        }
+//        mBufferTextView = view.findViewById(R.id.bufferTextView);
+//        if (mBufferTextView != null) {
+//            mBufferTextView.setKeyListener(null);     // make it not editable
+//        }
 
         // Send Text
         mSendEditText = view.findViewById(R.id.sendEditText);
@@ -176,12 +183,10 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
         mSendButton.setOnClickListener(view12 -> onClickSend());
 
         final boolean isInMultiUartMode = isInMultiUartMode();
-        mSendPeripheralSpinner = view.findViewById(R.id.sendPeripheralSpinner);
-        mSendPeripheralSpinner.setVisibility(isInMultiUartMode ? View.VISIBLE : View.GONE);
+
+
 
         // Counters
-        mSentBytesTextView = view.findViewById(R.id.sentBytesTextView);
-        mReceivedBytesTextView = view.findViewById(R.id.receivedBytesTextView);
 
         // Read shared preferences
         maxPacketsToPaintAsText = kDefaultMaxPacketsToPaintAsText; //PreferencesFragment.getUartTextMaxPackets(this);
@@ -191,7 +196,7 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
             SharedPreferences preferences = context.getSharedPreferences(kPreferences, Context.MODE_PRIVATE);
             setShowDataInHexFormat(!preferences.getBoolean(kPreferences_asciiMode, true));
             final boolean isTimestampDisplayMode = preferences.getBoolean(kPreferences_timestampDisplayMode, false);
-            setDisplayFormatToTimestamp(isTimestampDisplayMode);
+
             setEchoEnabled(preferences.getBoolean(kPreferences_echo, true));
             mIsEolEnabled = preferences.getBoolean(kPreferences_eol, true);
             mEolCharactersId = preferences.getInt(kPreferences_eolCharactersId, 0);
@@ -215,13 +220,13 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
 
     private void setShowDataInHexFormat(boolean showDataInHexFormat) {
         mShowDataInHexFormat = showDataInHexFormat;
-        mBufferItemAdapter.setShowDataInHexFormat(showDataInHexFormat);
+
 
     }
 
     private void setEchoEnabled(boolean isEchoEnabled) {
         mIsEchoEnabled = isEchoEnabled;
-        mBufferItemAdapter.setEchoEnabled(isEchoEnabled);
+
     }
 
     abstract protected boolean isInMultiUartMode();
@@ -383,14 +388,14 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
             }
 
             case R.id.action_displaymode_timestamp: {
-                setDisplayFormatToTimestamp(true);
+
                 invalidateTextView();
                 activity.invalidateOptionsMenu();
                 return true;
             }
 
             case R.id.action_displaymode_text: {
-                setDisplayFormatToTimestamp(false);
+
                 invalidateTextView();
                 activity.invalidateOptionsMenu();
                 return true;
@@ -476,9 +481,12 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
 
     // region UI
     protected void updateUartReadyUI(boolean isReady) {
-        mSendEditText.setEnabled(isReady);
-        //mSendEditText.setBackgroundColor(isReady ? Color.TRANSPARENT : 0x20000000);
-        mSendButton.setEnabled(isReady);
+        if (mSendEditText != null) {
+            mSendEditText.setEnabled(isReady);
+            //mSendEditText.setBackgroundColor(isReady ? Color.TRANSPARENT : 0x20000000);
+            mSendButton.setEnabled(isReady);
+        }
+
     }
 
     private void addTextToSpanBuffer(SpannableStringBuilder spanBuffer, String text, int color, boolean isBold) {
@@ -492,17 +500,9 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
 
     @MainThread
     private void updateBytesUI() {
-        if (mUartData != null) {
-            mSentBytesTextView.setText(String.format(getString(R.string.uart_sentbytes_format), mUartData.getSentBytes()));
-            mReceivedBytesTextView.setText(String.format(getString(R.string.uart_receivedbytes_format), mUartData.getReceivedBytes()));
-        }
+
     }
 
-    private void setDisplayFormatToTimestamp(boolean enabled) {
-        mIsTimestampDisplayMode = enabled;
-        mBufferTextView.setVisibility(enabled ? View.GONE : View.VISIBLE);
-        mBufferRecylerView.setVisibility(enabled ? View.VISIBLE : View.GONE);
-    }
 
     abstract protected int colorForPacket(UartPacket packet);
 
@@ -514,7 +514,7 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
         if (!mIsTimestampDisplayMode) {
             mPacketsCacheLastSize = 0;
             mTextSpanBuffer.clear();
-            mBufferTextView.setText("");
+            //mBufferTextView.setText("");
         }
     }
 
@@ -523,13 +523,7 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
         final int packetsCacheSize = packetsCache.size();
         if (mPacketsCacheLastSize != packetsCacheSize) {        // Only if the buffer has changed
 
-            if (mIsTimestampDisplayMode) {
 
-                mBufferItemAdapter.notifyDataSetChanged();
-                final int bufferSize = mBufferItemAdapter.getCachedDataBufferSize();
-                mBufferRecylerView.smoothScrollToPosition(Math.max(bufferSize - 1, 0));
-
-            } else {
                 if (packetsCacheSize > maxPacketsToPaintAsText) {
                     mPacketsCacheLastSize = packetsCacheSize - maxPacketsToPaintAsText;
                     mTextSpanBuffer.clear();
@@ -542,15 +536,15 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
                     onUartPacketText(packet);
                 }
 
-                mBufferTextView.setText(mTextSpanBuffer);
-                mBufferTextView.setSelection(0, mTextSpanBuffer.length());        // to automatically scroll to the end
+                //mBufferTextView.setText(mTextSpanBuffer);
+               // mBufferTextView.setSelection(0, mTextSpanBuffer.length());        // to automatically scroll to the end
             }
 
             mPacketsCacheLastSize = packetsCacheSize;
         }
 
-        updateBytesUI();
-    }
+
+
 
     // endregion
 
@@ -732,13 +726,10 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
             UartPacket packet = mTableCachedDataBuffer.get(position);
             final String currentDateTimeString = mDateFormat.format(new Date(packet.getTimestamp()));//DateFormat.getTimeInstance().format(new Date(packet.getTimestamp()));
             final String modeString = mContext.getString(packet.getMode() == UartPacket.TRANSFERMODE_RX ? R.string.uart_timestamp_direction_rx : R.string.uart_timestamp_direction_tx);
-            final int color = colorForPacket(packet);
-            final boolean isBold = isFontBoldForPacket(packet);
 
             itemViewHolder.timestampTextView.setText(String.format("%s %s", currentDateTimeString, modeString));
 
-            SpannableString text = stringFromPacket(packet, mShowDataInHexFormat, color, isBold);
-            itemViewHolder.dataTextView.setText(text);
+
 
             itemViewHolder.mainViewGroup.setBackgroundColor(position % 2 == 0 ? Color.WHITE : 0xeeeeee);
         }
@@ -770,6 +761,6 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
             return mTableCachedDataBuffer.size();
         }
     }
+}
 
     // endregion
-}

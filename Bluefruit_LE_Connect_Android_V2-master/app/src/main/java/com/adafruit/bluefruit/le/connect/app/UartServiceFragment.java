@@ -77,7 +77,6 @@ public class UartServiceFragment extends UartBaseFragment {
         }
 
         mUartData = new UartPeripheralModePacketManager(context, this, true, mMqttManager);
-        mBufferItemAdapter.setUartData(mUartData);
         mUartPeripheralService = PeripheralModeManager.getInstance().getUartPeripheralService();
         mUartPeripheralService.uartEnable(data -> mUartData.onRxDataReceived(data, null, BluetoothGatt.GATT_SUCCESS));
 
@@ -87,6 +86,11 @@ public class UartServiceFragment extends UartBaseFragment {
     // endregion
 
     // region Uart
+
+    @Override
+    public void onUartPacket(UartPacket packet) {
+        // do nothing
+    }
 
     @Override
     protected void send(String message) {
