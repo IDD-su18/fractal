@@ -16,7 +16,6 @@ class ScanViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlay
     // how long each recording should be
     let recordingSeconds = 5.0
     
-    @IBOutlet weak var tempSendBtn: UIButton!
     @IBOutlet weak var trackIdSegControl: UISegmentedControl!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var buttonStackView: UIStackView!
@@ -27,7 +26,7 @@ class ScanViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlay
     // the scan button should perform recording, playback, and post
     @IBOutlet weak var scanButton: UIButton!
     
-    
+    var isUsingBluetooth = false
     
     var peripheralManager: CBPeripheralManager?
     var peripheral: CBPeripheral!
@@ -59,14 +58,15 @@ class ScanViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlay
                 self.setUpUI()
             } else {
                 // User denied microphone. Tell them off!
-                
             }
         }
         print(getAudioFileUrl())
         
         // bluetooth
-        peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
-        updateIncomingData()
+        if isUsingBluetooth {
+            peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
+            updateIncomingData()
+        }
     }
     
     
@@ -78,12 +78,7 @@ class ScanViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlay
             
         }
     }
-    
-    func outgoingData () {
-        writeValue(data: "1")
-    }
-    
-    
+
     // Write functions
     func writeValue(data: String){
         let valueString = (data as NSString).data(using: String.Encoding.utf8.rawValue)
@@ -119,18 +114,9 @@ class ScanViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlay
             return
         }
     }
-    
-    @IBAction func tempSendButtonAction(_ sender: UIButton) {
-        outgoingData()
-    }
-    
+
     // MARK: not Bluetooth
-    
-    
-    
-    
-    
-    
+
     @IBAction func debugButtonPressed(_ sender: UIButton) {
         toggleDebug()
     }
@@ -179,10 +165,10 @@ class ScanViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlay
 
     @IBAction func recordButtonWasPressed(_ sender: UIButton) {
         if isRecording { 
-            sender.setTitle("Scan", for: .normal)
+            sender.setTitle("record", for: .normal)
             finishRecording()
         } else {
-            sender.isEnabled = false
+            sender.setTitle("stop", for: .normal)
             startRecording()
         }
     }
@@ -299,15 +285,23 @@ class ScanViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlay
         }
     }
     
+    private func startSelectedSoundFile() {
+        let stringToSend = String(describing: trackIdSegControl.selectedSegmentIndex)
+        writeValue(data: stringToSend)
+    }
     
     @IBAction func scanButtonPressed(_ sender: UIButton) {
         titleLabel.text = "Scan in progress"
         startRecording()
+        
+        if isUsingBluetooth {
+            startSelectedSoundFile()
+        }
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + recordingSeconds) {
             self.finishRecording()
             self.titleLabel.text = "Processing scan"
             self.postToHeroku()
-            
         }
     }
 }

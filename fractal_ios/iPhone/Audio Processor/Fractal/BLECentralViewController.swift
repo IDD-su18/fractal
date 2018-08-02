@@ -10,13 +10,10 @@ import Foundation
 import UIKit
 import CoreBluetooth
 
-
 var txCharacteristic : CBCharacteristic?
 var rxCharacteristic : CBCharacteristic?
 var blePeripheral : CBPeripheral?
 var characteristicASCIIValue = NSString()
-
-
 
 class BLECentralViewController : UIViewController, CBCentralManagerDelegate, CBPeripheralDelegate, UITableViewDelegate, UITableViewDataSource{
     
@@ -51,8 +48,6 @@ class BLECentralViewController : UIViewController, CBCentralManagerDelegate, CBP
         /*Our key player in this app will be our CBCentralManager. CBCentralManager objects are used to manage discovered or connected remote peripheral devices (represented by CBPeripheral objects), including scanning for, discovering, and connecting to advertising peripherals.
          */
         centralManager = CBCentralManager(delegate: self, queue: nil)
-        let backButton = UIBarButtonItem(title: "Disconnect", style: .plain, target: nil, action: nil)
-        navigationItem.backBarButtonItem = backButton
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -66,6 +61,14 @@ class BLECentralViewController : UIViewController, CBCentralManagerDelegate, CBP
         super.viewWillDisappear(animated)
         print("Stop Scanning")
         centralManager?.stopScan()
+    }
+    
+    @IBAction func useWithoutBluetoothAction(_ sender: UIButton) {
+        //Once connected, move to new view controller to manager incoming and outgoing data
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let scanViewController = storyboard.instantiateViewController(withIdentifier: "ScanViewController") as! ScanViewController
+        scanViewController.isUsingBluetooth = false
+        navigationController?.pushViewController(scanViewController, animated: true)
     }
     
     /*Okay, now that we have our CBCentalManager up and running, it's time to start searching for devices. You can do this by calling the "scanForPeripherals" method.*/
@@ -161,9 +164,8 @@ class BLECentralViewController : UIViewController, CBCentralManagerDelegate, CBP
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
         let scanViewController = storyboard.instantiateViewController(withIdentifier: "ScanViewController") as! ScanViewController
-        
+        scanViewController.isUsingBluetooth = true
         scanViewController.peripheral = peripheral
-        
         navigationController?.pushViewController(scanViewController, animated: true)
     }
     
