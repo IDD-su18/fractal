@@ -101,12 +101,12 @@ void setup(void)
   pinMode(A2, INPUT);
   pinMode(A3, INPUT);
   pinMode(A4, INPUT);
-  while (!Serial);  // required for Flora & Micro
-  delay(500);
-
-  Serial.begin(115200);
-  Serial.println(F("Adafruit Bluefruit Command Mode Example"));
-  Serial.println(F("---------------------------------------"));
+//  while (!Serial);  // required for Flora & Micro
+//  delay(500);
+//
+//  Serial.begin(115200);
+//  Serial.println(F("Adafruit Bluefruit Command Mode Example"));
+//  Serial.println(F("---------------------------------------"));
 
   /* Initialise the module */
   Serial.print(F("Initialising the Bluefruit LE module: "));
@@ -193,26 +193,35 @@ void loop(void)
     Serial.println(ble.buffer);
     toggle = !toggle;
     toggleSoundPins(ble.buffer[0]);
+    Serial.print("oyooL ");
+    Serial.println(ble.buffer[0]);
   }
   ble.waitForOK();
 }
 
-void toggleSoundPins(int idSentFromAndroid) {
-  int pinNumber = idSentFromAndroid-48;
+void toggleSoundPins(char pinNumber) {
+  //int pinNumber = charNumber-48;
+  Serial.print("pin numb: ");
+  Serial.println(pinNumber);
   switch (pinNumber) {
-    case 0:
-      Serial.println(pinNumber);
+    case '0':
       setPinHigh(A0);
-    case 1:
+      break;
+    case '1':
       setPinHigh(A1);
-    case 2:
+      break;
+    case '2':
       setPinHigh(A2);
-    case 3:
+      break;
+    case '3':
       setPinHigh(A3);
-    case 4:
+      break;
+    case '4':
       setPinHigh(A4);
-    case 5:
+      break;
+    case '5':
       setPinHigh(A5);
+      break;
     default:
       //Serial.println(sentID);
       break;
@@ -224,9 +233,8 @@ void setPinHigh(int pin) {
   Serial.println(pin);
   pinMode(pin, OUTPUT);
   digitalWrite(pin, LOW);
-  delay(200);
+  delay(500);
   pinMode(pin, INPUT_PULLUP);
-  
 }
 
 /**************************************************************************/
