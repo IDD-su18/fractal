@@ -1,6 +1,6 @@
 
 //
-//  ViewController.swift
+//  ScanViewController.swift
 //  Audio Processor
 //
 //  Created by Matthew Jeng on 7/26/18.
@@ -28,14 +28,10 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     @IBOutlet weak var trackIdSegControl: UISegmentedControl!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var buttonStackView: UIStackView!
-    @IBOutlet weak var recordButton: UIButton!
     @IBOutlet weak var playButton: UIButton!
-    @IBOutlet weak var postButton: UIButton!
     @IBOutlet weak var calculateTransmissionRateButton: UIButton!
     @IBOutlet weak var suspectedScannedLabel: UILabel!
     @IBOutlet weak var contralateralScannedLabel: UILabel!
-    // the scan button should perform recording, playback, and post
-    @IBOutlet weak var scanButton: UIButton!
     
     var isUsingBluetooth = false
     var hasReceiviedInitialMessage = false
@@ -148,9 +144,6 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         }
     }
     
-    
-    
-    
     // Write functions
     func writeValue(data: String){
         let valueString = (data as NSString).data(using: String.Encoding.utf8.rawValue)
@@ -228,43 +221,11 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     //        }.resume()
     //    }
     
-    @IBAction func recordingTypeChanges(_ sender: UISegmentedControl) {
-        // TODO: refactor this
-        currentScanMode = sender.titleForSegment(at: sender.selectedSegmentIndex)!
-        switch currentScanMode {
-        case "suspected":
-            if suspectedRecordingExists {
-                scanButton.setTitle("re-scan", for: .normal)
-                return
-            }
-            else {
-                scanButton.setTitle("scan", for: .normal)
-                return
-            }
-        default:
-            if contralateralRecordingExists {
-                scanButton.setTitle("re-scan", for: .normal)
-                return
-            }
-            else {
-                scanButton.setTitle("scan", for: .normal)
-                return
-            }
-        }
-    }
-    
-    @IBAction func recordButtonWasPressed(_ sender: UIButton) {
-        if isRecording { 
-            sender.setTitle("record", for: .normal)
-            finishRecording()
-        } else {
-            sender.setTitle("stop", for: .normal)
-            startRecording()
-        }
-    }
+
     
     @IBAction func play(_ sender: UIButton) {
         //playSound()
+        // TODO
     }
     
     
@@ -311,15 +272,11 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
             suspectedRecordingExists = true
             suspectedScannedLabel.text = "scanned"
             suspectedScannedLabel.textColor = teal
-            scanButton.setTitle("re-scan", for: .normal)
         default:
             contralateralRecordingExists = true
             contralateralScannedLabel.text = "scanned"
             contralateralScannedLabel.textColor = teal
         }
-        
-        scanButton.setTitle("re-scan", for: .normal)
-        scanButton.backgroundColor = teal
     }
     
     // Path for saving/retreiving the audio file
@@ -337,16 +294,14 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         } else {
             // Recording interrupted by other reasons like call coming, reached time limit.
         }
-        //playButton.isEnabled = true
     }
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         if flag {
-            
+            // TODO
         } else {
             // Playing interrupted by other reasons like call coming, the sound has not finished playing.
         }
-        recordButton.isEnabled = true
     }
     
     @IBAction func postButton(_ sender: Any) {

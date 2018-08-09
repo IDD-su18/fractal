@@ -147,13 +147,13 @@
                                         <rect key="frame" x="0.0" y="120" width="256" height="17"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="suspected bone: " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RN2-La-aF2">
-                                                <rect key="frame" x="0.0" y="0.0" width="133.5" height="17"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="133" height="17"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="not yet scanned" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tV1-zf-pmN">
-                                                <rect key="frame" x="133.5" y="0.0" width="122.5" height="17"/>
+                                                <rect key="frame" x="133" y="0.0" width="123" height="17"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <nil key="highlightedColor"/>
@@ -179,36 +179,8 @@
                                     </stackView>
                                 </subviews>
                             </stackView>
-                            <segmentedControl opaque="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="acr-n6-45A">
-                                <rect key="frame" x="13" y="344" width="293" height="61"/>
-                                <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="60" id="Qqp-lS-0E4"/>
-                                </constraints>
-                                <segments>
-                                    <segment title="suspected"/>
-                                    <segment title="contralateral"/>
-                                </segments>
-                                <color key="tintColor" red="0.0" green="0.56904578210000001" blue="0.57461684940000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <connections>
-                                    <action selector="recordingTypeChanges:" destination="BYZ-38-t0r" eventType="valueChanged" id="Mvc-Cg-Af7"/>
-                                </connections>
-                            </segmentedControl>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ph7-8S-ISF">
-                                <rect key="frame" x="13" y="428" width="293" height="120"/>
-                                <color key="backgroundColor" red="0.0" green="0.56904578210000001" blue="0.57461684940000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="293" id="Fei-Pv-c7s"/>
-                                    <constraint firstAttribute="height" constant="120" id="tUX-o5-u2J"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
-                                <inset key="contentEdgeInsets" minX="0.0" minY="20" maxX="0.0" maxY="20"/>
-                                <state key="normal" title="start scan">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </state>
-                            </button>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TXF-sy-eOk">
-                                <rect key="frame" x="13" y="290" width="293" height="34"/>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TXF-sy-eOk">
+                                <rect key="frame" x="51.5" y="290" width="216" height="34"/>
                                 <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="34" id="lLb-oY-reR"/>
@@ -222,37 +194,62 @@
                                     <action selector="calculateTransmissionRateAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="tXV-zC-48A"/>
                                 </connections>
                             </button>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tfL-8L-9mq">
+                            <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tfL-8L-9mq">
                                 <rect key="frame" x="0.0" y="269" width="320" height="1"/>
                                 <color key="backgroundColor" red="0.57045853140000002" green="0.57047235969999999" blue="0.57046490910000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="1" id="UzA-CZ-AY5"/>
                                 </constraints>
                             </view>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="oaC-7b-Ikb">
+                                <rect key="frame" x="40" y="408" width="240" height="130"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B6u-3D-CPK">
+                                        <rect key="frame" x="0.0" y="0.0" width="240" height="60"/>
+                                        <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="n6F-5n-K5M"/>
+                                        </constraints>
+                                        <color key="tintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <state key="normal" title="playback">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="titleShadowColor" red="0.057000000000000002" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="play:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Dpm-2G-L9h"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Q9k-qW-4sF">
+                                        <rect key="frame" x="0.0" y="70" width="240" height="60"/>
+                                        <color key="backgroundColor" red="1" green="0.2330011129" blue="0.50126534700000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="tintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <state key="normal" title="rescan contralateral bone">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="titleShadowColor" red="0.057000000000000002" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </state>
+                                    </button>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="nh0-3c-6Ay" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="25" id="76G-SB-Gq5"/>
-                            <constraint firstItem="TXF-sy-eOk" firstAttribute="centerX" secondItem="acr-n6-45A" secondAttribute="centerX" id="B4r-Z8-ljC"/>
+                            <constraint firstItem="oaC-7b-Ikb" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="3/4" id="8IO-WI-BO9"/>
                             <constraint firstItem="tfL-8L-9mq" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" id="OW0-kd-khX"/>
-                            <constraint firstItem="acr-n6-45A" firstAttribute="top" secondItem="TXF-sy-eOk" secondAttribute="bottom" constant="20" id="SEk-WH-pSz"/>
                             <constraint firstItem="TXF-sy-eOk" firstAttribute="top" secondItem="tfL-8L-9mq" secondAttribute="bottom" constant="20" id="SZd-k8-uBl"/>
                             <constraint firstItem="grb-we-6C1" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="4/5" id="VZh-YV-0N1"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Ph7-8S-ISF" secondAttribute="bottom" constant="20" id="Ymt-QF-kOy"/>
-                            <constraint firstItem="acr-n6-45A" firstAttribute="width" secondItem="Ph7-8S-ISF" secondAttribute="width" id="dWo-NN-3Vk"/>
-                            <constraint firstItem="Ph7-8S-ISF" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="edF-vN-HFk"/>
-                            <constraint firstItem="acr-n6-45A" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="gon-91-vGb"/>
-                            <constraint firstItem="Ph7-8S-ISF" firstAttribute="top" secondItem="acr-n6-45A" secondAttribute="bottom" constant="24" id="oiO-em-3Vd"/>
-                            <constraint firstItem="TXF-sy-eOk" firstAttribute="width" secondItem="acr-n6-45A" secondAttribute="width" id="rNa-La-2Vs"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Q9k-qW-4sF" secondAttribute="bottom" constant="30" id="YzT-50-t5W"/>
+                            <constraint firstItem="oaC-7b-Ikb" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="dWA-90-5I4"/>
                             <constraint firstItem="grb-we-6C1" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="uZ7-7n-sfd"/>
                             <constraint firstItem="tfL-8L-9mq" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="xwf-dZ-m38"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
+                        <outlet property="buttonStackView" destination="oaC-7b-Ikb" id="uCy-ma-Gac"/>
                         <outlet property="calculateTransmissionRateButton" destination="TXF-sy-eOk" id="vkA-Cw-lzj"/>
                         <outlet property="contralateralScannedLabel" destination="inO-aZ-qjm" id="0V6-wI-O8P"/>
-                        <outlet property="scanButton" destination="Ph7-8S-ISF" id="6F7-XK-K1D"/>
+                        <outlet property="playButton" destination="B6u-3D-CPK" id="zO9-NV-fs6"/>
                         <outlet property="suspectedScannedLabel" destination="tV1-zf-pmN" id="Egd-Lq-vVI"/>
                         <outlet property="titleLabel" destination="nh0-3c-6Ay" id="kLm-Ax-tll"/>
                         <outlet property="trackIdSegControl" destination="b14-YU-4NA" id="3GF-7M-Ema"/>
@@ -270,32 +267,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="GZJ-WZ-L4n">
-                                <rect key="frame" x="16" y="362" width="288" height="130"/>
-                                <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Suz-SM-W33">
-                                        <rect key="frame" x="0.0" y="0.0" width="288" height="60"/>
-                                        <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="60" id="hzq-76-zCE"/>
-                                        </constraints>
-                                        <color key="tintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <state key="normal" title="playback">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            <color key="titleShadowColor" red="0.057000000000000002" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                        </state>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="P7F-fN-hsq">
-                                        <rect key="frame" x="0.0" y="70" width="288" height="60"/>
-                                        <color key="backgroundColor" red="1" green="0.2330011129" blue="0.50126534700000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <color key="tintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <state key="normal" title="rescan contralateral bone">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            <color key="titleShadowColor" red="0.057000000000000002" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                        </state>
-                                    </button>
-                                </subviews>
-                            </stackView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap the actuator button to continue to the next scan" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WnX-eV-8Dy">
                                 <rect key="frame" x="57" y="76" width="206" height="89"/>
                                 <constraints>
@@ -310,10 +281,7 @@
                         <constraints>
                             <constraint firstItem="WnX-eV-8Dy" firstAttribute="leading" secondItem="uOI-DU-f7P" secondAttribute="leading" constant="57" id="7CS-Wl-Z76"/>
                             <constraint firstItem="WnX-eV-8Dy" firstAttribute="top" secondItem="uOI-DU-f7P" secondAttribute="top" constant="12" id="HFL-iJ-vYW"/>
-                            <constraint firstItem="uOI-DU-f7P" firstAttribute="trailing" secondItem="GZJ-WZ-L4n" secondAttribute="trailing" constant="16" id="Jqy-dm-07E"/>
                             <constraint firstItem="WnX-eV-8Dy" firstAttribute="centerX" secondItem="uOI-DU-f7P" secondAttribute="centerX" id="UDG-5l-OFa"/>
-                            <constraint firstItem="GZJ-WZ-L4n" firstAttribute="centerX" secondItem="uOI-DU-f7P" secondAttribute="centerX" id="bGV-Ll-sIW"/>
-                            <constraint firstItem="uOI-DU-f7P" firstAttribute="bottom" secondItem="GZJ-WZ-L4n" secondAttribute="bottom" constant="76" id="nx4-Mj-6HR"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="uOI-DU-f7P"/>
                     </view>

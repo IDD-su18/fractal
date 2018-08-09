@@ -50,6 +50,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		452BA4DE211C4ADE00778CA7 /* view controllers */ = {
+			isa = PBXGroup;
+			children = (
+				450CB78E2112C85000661FAD /* BLECentralViewController.swift */,
+				452BA4DC211C1D5000778CA7 /* ScannerViewController.swift */,
+				454DC41521130D620095FBBC /* ResultsViewController.swift */,
+				C9EDC464210A968300F23F55 /* ScanViewController.swift */,
+			);
+			path = "view controllers";
+			sourceTree = "<group>";
+		};
 		A8E65E7D323792FEAEE9CF25 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -82,12 +93,9 @@
 			children = (
 				C9EDC462210A968300F23F55 /* AppDelegate.swift */,
 				450CB78A2112C73300661FAD /* BluetoothDeviceTableViewCell.swift */,
-				452BA4DC211C1D5000778CA7 /* ScannerViewController.swift */,
-				454DC41521130D620095FBBC /* ResultsViewController.swift */,
-				C9EDC464210A968300F23F55 /* ScanViewController.swift */,
+				452BA4DE211C4ADE00778CA7 /* view controllers */,
 				C9EDC466210A968300F23F55 /* Main.storyboard */,
 				450CB78C2112C7F600661FAD /* UUIDKey.swift */,
-				450CB78E2112C85000661FAD /* BLECentralViewController.swift */,
 				C9EDC469210A968700F23F55 /* Assets.xcassets */,
 				C9EDC46B210A968700F23F55 /* LaunchScreen.storyboard */,
 				C9EDC46E210A968700F23F55 /* Info.plist */,
