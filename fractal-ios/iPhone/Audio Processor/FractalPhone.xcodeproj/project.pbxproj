@@ -10,7 +10,6 @@
 		450CB78B2112C73300661FAD /* BluetoothDeviceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450CB78A2112C73300661FAD /* BluetoothDeviceTableViewCell.swift */; };
 		450CB78D2112C7F600661FAD /* UUIDKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450CB78C2112C7F600661FAD /* UUIDKey.swift */; };
 		450CB78F2112C85000661FAD /* BLECentralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450CB78E2112C85000661FAD /* BLECentralViewController.swift */; };
-		452BA4DD211C1D5000778CA7 /* ScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452BA4DC211C1D5000778CA7 /* ScannerViewController.swift */; };
 		454DC41621130D620095FBBC /* ResultsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 454DC41521130D620095FBBC /* ResultsViewController.swift */; };
 		70E01867AA9694A6D50E1732 /* Pods_Audio_Processor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B38A6274E18B69C44AEB83C /* Pods_Audio_Processor.framework */; };
 		C9EDC463210A968300F23F55 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9EDC462210A968300F23F55 /* AppDelegate.swift */; };
@@ -25,7 +24,6 @@
 		450CB78A2112C73300661FAD /* BluetoothDeviceTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothDeviceTableViewCell.swift; sourceTree = "<group>"; };
 		450CB78C2112C7F600661FAD /* UUIDKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUIDKey.swift; sourceTree = "<group>"; };
 		450CB78E2112C85000661FAD /* BLECentralViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLECentralViewController.swift; sourceTree = "<group>"; };
-		452BA4DC211C1D5000778CA7 /* ScannerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerViewController.swift; sourceTree = "<group>"; };
 		454DC41521130D620095FBBC /* ResultsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultsViewController.swift; sourceTree = "<group>"; };
 		4B38A6274E18B69C44AEB83C /* Pods_Audio_Processor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Audio_Processor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9EDC45F210A968300F23F55 /* Audio Processor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Audio Processor.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -54,7 +52,6 @@
 			isa = PBXGroup;
 			children = (
 				450CB78E2112C85000661FAD /* BLECentralViewController.swift */,
-				452BA4DC211C1D5000778CA7 /* ScannerViewController.swift */,
 				454DC41521130D620095FBBC /* ResultsViewController.swift */,
 				C9EDC464210A968300F23F55 /* ScanViewController.swift */,
 			);
@@ -204,7 +201,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				452BA4DD211C1D5000778CA7 /* ScannerViewController.swift in Sources */,
 				450CB78D2112C7F600661FAD /* UUIDKey.swift in Sources */,
 				450CB78F2112C85000661FAD /* BLECentralViewController.swift in Sources */,
 				450CB78B2112C73300661FAD /* BluetoothDeviceTableViewCell.swift in Sources */,

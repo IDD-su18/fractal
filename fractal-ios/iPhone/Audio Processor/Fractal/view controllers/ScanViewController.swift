@@ -14,13 +14,27 @@ import CoreBluetooth
 class ScanViewController: UIViewController, AVAudioRecorderDelegate,
 AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     
-    var currentScanMode = "suspected"
+    var currentScanMode: ScanMode = .contralateral
     
+    let INDEX_PLAY_BTN = 0
+    let INDEX_DEL_BTN = 1
+
+    enum ScanMode: String {
+        case contralateral
+        case suspected
+    }
+    
+    @IBOutlet weak var suspectedStatusLabel: UILabel!
+    @IBOutlet weak var contralateralStatusLabel: UILabel!
+    @IBOutlet weak var suspectedBackgroundView: UIView!
     var suspectedRecordingExists =  false
     var contralateralRecordingExists =  false
+    @IBOutlet weak var contralateralBackgroundView: UIView!
     
     var teal = UIColor(red: 0.0, green: 0.569, blue: 0.575, alpha: 1.0)
     var reddish = UIColor(red: 1.00, green: 0.149, blue: 0.0, alpha: 1.0)
+    
+    var isContralateralViewController = false
     
     // how long each recording should be
     var recordingSeconds = 15.0
@@ -28,10 +42,11 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     @IBOutlet weak var trackIdSegControl: UISegmentedControl!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var buttonStackView: UIStackView!
-    @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var calculateTransmissionRateButton: UIButton!
-    @IBOutlet weak var suspectedScannedLabel: UILabel!
-    @IBOutlet weak var contralateralScannedLabel: UILabel!
+    @IBOutlet weak var contralateralButton: UIButton!
+    @IBOutlet weak var suspectedButton: UIButton!
+    @IBOutlet weak var suspectedStackView: UIStackView!
+    @IBOutlet weak var contralateralStackView: UIStackView!
     
     var isUsingBluetooth = false
     var hasReceiviedInitialMessage = false
@@ -45,43 +60,67 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     var player : AVAudioPlayer?
     var recordingExists = false
     
-    
-    
     //    var recordingSession: AVAudioSession!
     //    var audioRecorder: AVAudioRecorder!
     
-    @IBOutlet weak var imageView: UIImageView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
         // bluetooth
-        self.navigationItem.backBarButtonItem = UIBarButtonItem(title:"Back", style:.plain, target:nil, action:nil)
-        
-        self.navigationItem.title = "Scan"
         
         // Asking user permission for accessing Microphone
         AVAudioSession.sharedInstance().requestRecordPermission () {
             [unowned self] allowed in
             if allowed {
                 // Microphone allowed, do what you like!
-                self.setUpUI()
+                
             } else {
                 // User denied microphone. Tell them off!
             }
         }
         print(getAudioFileUrl())
         
-        //        buttonStackView.arrangedSubviews[0].isHidden = true
-        //        buttonStackView.arrangedSubviews[1].isHidden = true
         
-        // bluetooth
         if isUsingBluetooth {
             peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
-            updateIncomingData()
+            
         }
         
+        
+        updateIncomingData()
+        setUpUI()
+    }
+    
+    func setScanMode(toMode mode: ScanMode) {
+        print("setting scan mode")
+        currentScanMode = mode
+        updateUI()
+    }
+    
+    func setUpUI() {
+        if currentScanMode == .contralateral {
+            self.navigationItem.title = "Contralateral"
+            titleLabel.text = "Ready to scan contralateral bone.\n\n Press actuator button to start."
+        }
+        else {
+            self.navigationItem.title = "Suspected"
+            titleLabel.text = "Ready to scan suspected bone.\n\n Press actuator button to start"
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        // peripheralManager?.stopAdvertising()
+        // self.peripheralManager = nil
+        super.viewDidDisappear(animated)
+        NotificationCenter.default.removeObserver(self)
+        
+    }
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        recordingExists = false
         
     }
     
@@ -93,52 +132,139 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         
     }
     
+    @IBAction func contralateralAction(_ sender: UIButton) {
+        currentScanMode = .contralateral
+        updateUI()
+    }
+    @IBAction func suspectedAction(_ sender: UIButton) {
+        currentScanMode = .suspected
+        updateUI()
+    }
+    
+    func updateUI() {
+        
+        
+    
+            if contralateralRecordingExists {
+                contralateralStackView.arrangedSubviews[INDEX_DEL_BTN].isHidden = false
+                contralateralStackView.arrangedSubviews[INDEX_PLAY_BTN].isHidden = false
+                contralateralStatusLabel.text = "Scan complete"
+            }
+            
+            if !contralateralRecordingExists {
+                if currentScanMode != .contralateral {
+                    contralateralStatusLabel.text = "Not yet scanned"
+                }
+                else {
+                    contralateralStatusLabel.text = "Ready to scan"
+                }
+            }
+            
+            if suspectedRecordingExists {
+                suspectedStackView.arrangedSubviews[INDEX_DEL_BTN].isHidden = false
+                suspectedStackView.arrangedSubviews[INDEX_PLAY_BTN].isHidden = false
+                suspectedStatusLabel.text = "Scan complete"
+            }
+            if !suspectedRecordingExists {
+                if currentScanMode != .suspected {
+                    suspectedStatusLabel.text = "Not yet scanned"
+                }
+                else {
+                    suspectedStatusLabel.text = "Ready to scan"
+                }
+            }
+        
+        if (contralateralRecordingExists && suspectedRecordingExists) {
+            self.titleLabel.text = "Both scans complete. \n\nPress the actuator button to calculate transmission rate."
+        }
+        
+        
+        switch currentScanMode {
+        case .contralateral:
+            contralateralBackgroundView.backgroundColor = teal
+            suspectedBackgroundView.backgroundColor = .gray
+        case .suspected:
+            suspectedBackgroundView.backgroundColor = teal
+            contralateralBackgroundView.backgroundColor = .gray
+        }
+    }
+    
     
     // MARK: Bluetooth
     func updateIncomingData () {
+        
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "Notify"), object: nil , queue: nil){
             notification in
             
-            self.startScan()
+            guard self.hasReceiviedInitialMessage == true else {
+                // this is not a great way to do this but it works
+                // not able to parse received messages yet, but they only
+                // send once when bluetooth connects and then every time a button press
+                // this guard makes sure we dont turn on the scanner for the initial
+                // bluetooth connect message
+                self.hasReceiviedInitialMessage = true
+                return
+            }
+            if (self.contralateralRecordingExists && self.suspectedRecordingExists) {
+                self.postToHeroku()
+                return
+            }
+            else if (self.currentScanMode == .contralateral) {
+                if (!self.contralateralRecordingExists) {
+                    self.startScan()
+                }
+            }
+            else if (self.currentScanMode == .suspected) {
+                if (!self.suspectedRecordingExists) {
+                    self.startScan()
+                }
+                
+            }
         }
     }
-        
+    
+    
+    func changeScanMode(toMode newScanMode: ScanMode) {
+        currentScanMode = newScanMode
+        updateUI()
+    }
+    
     func startScan() {
         /* update UI for scan in progress
          * start actuator, and start recording */
         
-        guard hasReceiviedInitialMessage == true else {
-            // this is not a great way to do this but it works
-            // not able to parse received messages yet, but they only
-            // send once when bluetooth connects and then every time a button press
-            // this guard makes sure we dont turn on the scanner for the initial
-            // bluetooth connect message
-            hasReceiviedInitialMessage = true
-            return
-        }
-        
         let newAsciiText = NSMutableAttributedString(attributedString: self.consoleAsciiText!)
-        titleLabel.text = "Scan in progress"
-        
+        switch currentScanMode {
+        case .contralateral:
+            contralateralStatusLabel.text = "Scan in progress"
+        default:
+            suspectedStatusLabel.text = "Scan in progress"
+        }
+
         print("char ascii val =" + (characteristicASCIIValue as String))
-        if (trackIdSegControl.selectedSegmentIndex == 0) {
-            recordingSeconds = 5
-        }
-        else if (trackIdSegControl.selectedSegmentIndex == 1) {
-            recordingSeconds = 15
-        }
+        
+        // todo: add setting for switching b/w sounds
+        recordingSeconds = 5
+        
         startRecording()
         startSelectedSoundFile()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + recordingSeconds) {
             self.finishRecording()
-            self.titleLabel.text = "Scan complete"
-            if (self.suspectedRecordingExists && self.contralateralRecordingExists) {
+            if self.currentScanMode == .contralateral {
+                self.titleLabel.text = "Contralateral scan complete. \n\nPress the actuator button to continue to the next step."
+                self.contralateralRecordingExists = true
+                self.setScanMode(toMode: .suspected)
+            }
                 
+            else {
+                self.suspectedRecordingExists = true
+                self.setScanMode(toMode: .contralateral)
+            }
+            
+            if (self.suspectedRecordingExists && self.contralateralRecordingExists) {
                 UIView.animate(withDuration: 0.5, animations: {
-                    
                     self.calculateTransmissionRateButton.isHidden = false
-                    
                 })
             }
         }
@@ -182,17 +308,6 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     
     // MARK: not Bluetooth
     
-    @IBAction func debugButtonPressed(_ sender: UIButton) {
-        UIView.animate(withDuration: 0.5, animations: {
-            self.buttonStackView.arrangedSubviews[0].isHidden = !self.buttonStackView.arrangedSubviews[0].isHidden
-            
-        })
-    }
-    
-    func setUpUI() {
-        print("I ain't needa do nothin")
-    }
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -221,14 +336,10 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     //        }.resume()
     //    }
     
-
-    
     @IBAction func play(_ sender: UIButton) {
         //playSound()
         // TODO
     }
-    
-    
     
     func startRecording() {
         //1. create the session
@@ -251,8 +362,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
             audioRecorder?.record()
             
             //5. Changing record icon to stop icon
-            isRecording = true
-            //            playButton.isEnabled = false
+            
         }
         catch let error {
             print("ERROR in startRecording")
@@ -266,27 +376,15 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         audioRecorder?.stop()
         isRecording = false
         recordingExists = true
-        
-        switch currentScanMode {
-        case "suspected":
-            suspectedRecordingExists = true
-            suspectedScannedLabel.text = "scanned"
-            suspectedScannedLabel.textColor = teal
-        default:
-            contralateralRecordingExists = true
-            contralateralScannedLabel.text = "scanned"
-            contralateralScannedLabel.textColor = teal
-        }
     }
     
     // Path for saving/retreiving the audio file
     func getAudioFileUrl() -> URL{
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let docsDirect = paths[0]
-        let audioUrl = docsDirect.appendingPathComponent(currentScanMode + ".m4a")
-        return audioUrl
+        
+        return docsDirect.appendingPathComponent(currentScanMode.rawValue + ".mp4")
     }
-    
     
     func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
         if flag {
@@ -304,32 +402,30 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         }
     }
     
-    @IBAction func postButton(_ sender: Any) {
-        postToHeroku()
+    func postToHeroku() {
+        
+        guard let url = URL(string: "https://emilys-server.herokuapp.com/process_audio") else { return }
+        var request = URLRequest(url: url)
+        request.setValue("audio/x-wav", forHTTPHeaderField: "Content-Type")
+        request.httpMethod = "POST"
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print(error as Any)
+                return
+            }
+            DispatchQueue.main.async {
+                
+                var resultsViewController = self.instantiateViewController(withID: "ResultsViewController") as! ResultsViewController
+                resultsViewController.resultsImage = UIImage(data: data)
+                self.navigationController?.pushViewController(resultsViewController, animated: true)
+            }
+        }
+        task.resume()
     }
     
-    func postToHeroku() {
-        if recordingExists {
-            guard let url = URL(string: "https://emilys-server.herokuapp.com/process_audio") else { return }
-            var request = URLRequest(url: url)
-            request.setValue("audio/x-wav", forHTTPHeaderField: "Content-Type")
-            request.httpMethod = "POST"
-            let task = URLSession.shared.dataTask(with: request) { data, response, error in
-                guard let data = data, error == nil else {
-                    print(error as Any)
-                    return
-                }
-                DispatchQueue.main.async {
-                    
-                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                    let resultsViewController = storyboard.instantiateViewController(withIdentifier: "ResultsViewController") as! ResultsViewController
-                    resultsViewController.resultsImage = UIImage(data: data)
-                    self.navigationController?.pushViewController(resultsViewController, animated: true)
-                    
-                }
-            }
-            task.resume()
-        }
+    private func instantiateViewController(withID id: String) -> UIViewController {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        return storyboard.instantiateViewController(withIdentifier: id)
     }
     
     private func startSelectedSoundFile() {
@@ -341,13 +437,5 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         self.titleLabel.text = "Calculating transmission rate"
         postToHeroku()
     }
-    
-    @IBAction func scanButtonPressed(_ sender: UIButton) {
-  
-    
-    
-    }
-    
-    
 }
 

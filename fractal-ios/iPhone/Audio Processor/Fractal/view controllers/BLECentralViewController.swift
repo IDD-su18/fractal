@@ -172,7 +172,6 @@ class BLECentralViewController : UIViewController, CBCentralManagerDelegate, CBP
     /*
      Invoked when the central manager fails to create a connection with a peripheral.
      */
-    
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
         if error != nil {
             print("Failed to connect to peripheral")

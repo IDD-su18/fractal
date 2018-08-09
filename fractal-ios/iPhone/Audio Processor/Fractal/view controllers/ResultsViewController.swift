@@ -13,7 +13,6 @@ class ResultsViewController: UIViewController, AVAudioPlayerDelegate {
 
     @IBOutlet weak var imageView: UIImageView!
     
-    
     var player : AVAudioPlayer?
     var resultsImage: UIImage?
     
