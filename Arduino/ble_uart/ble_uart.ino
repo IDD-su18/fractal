@@ -26,6 +26,16 @@
 
 boolean toggle = HIGH;
 
+const int  buttonPin = 11;
+const int ledPin = 13;
+
+// constants for button press detection
+int buttonState;             // the current reading from the input pin
+int lastButtonState = LOW; 
+
+unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
+unsigned long debounceDelay = 50;  
+
 /*=========================================================================
     APPLICATION SETTINGS
 
@@ -101,6 +111,8 @@ void setup(void)
   pinMode(A2, INPUT);
   pinMode(A3, INPUT);
   pinMode(A4, INPUT);
+  pinMode(buttonPin, INPUT_PULLUP);
+  pinMode(ledPin, INPUT_PULLUP);
 //  while (!Serial);  // required for Flora & Micro
 //  delay(500);
 //
@@ -162,7 +174,15 @@ void setup(void)
 /**************************************************************************/
 void loop(void)
 {
+
+
+  detectButtonPress();
+  //pinMode(ledPin, OUTPUT);
   // Check for user input
+
+  // read the state of the pushbutton value:
+  
+  
   char inputs[BUFSIZE+1];
 
   if ( getUserInput(inputs, BUFSIZE) )
@@ -199,13 +219,38 @@ void loop(void)
   ble.waitForOK();
 }
 
+
+
+void detectButtonPress() {
+  int reading = digitalRead(buttonPin);
+//  if (reading != lastButtonState) {
+//    lastDebounceTime = millis();
+//  }
+ // if ((millis() - lastDebounceTime) > debounceDelay) {
+    if (reading != buttonState) {
+      buttonState = reading;
+      if (buttonState == HIGH) {
+        ble.print("AT+BLEUARTTX=");
+        Serial.println("button press");
+
+            if (! ble.waitForOK() ) {
+              Serial.println(F("Failed to send?"));
+    }
+      }
+    }
+  //}
+  // save the reading. Next time through the loop, it'll be the lastButtonState:
+  lastButtonState = reading;
+}
+
 void toggleSoundPins(char pinNumber) {
   //int pinNumber = charNumber-48;
   Serial.print("pin numb: ");
   Serial.println(pinNumber);
   switch (pinNumber) {
     case '0':
-      setPinHigh(A0);
+    Serial.println("case 0");
+      setPinHigh(A5);
       break;
     case '1':
       setPinHigh(A1);
