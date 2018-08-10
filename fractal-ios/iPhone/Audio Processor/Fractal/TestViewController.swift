@@ -33,7 +33,7 @@ AVAudioPlayerDelegate {
             finishRecording()
         }
         else {
-           startRecording(testFile1Name)
+            startRecording(testFile1Name)
             isRecording = true
         }
         
@@ -41,6 +41,8 @@ AVAudioPlayerDelegate {
     
     @IBAction func play1(_ sender: Any) {
         playSound(urlName: testFile1Name)
+        //var sigArray = loadAudioSignal(audioURL: getAudioFileUrl(name: testFile1Name))
+        //print(sigArray)
     }
     
     @IBAction func send1(_ sender: UIButton) {
@@ -68,13 +70,13 @@ AVAudioPlayerDelegate {
     }
     
     @IBAction func processButtonAction(_ sender: UIButton) {
-    
+        
         let rlJSONObj = getProcessedAudio()
     }
     
     func startRecording(_ recordingName: String) {
         //1. create the session
-
+        
         let url = getAudioFileUrl(name: recordingName)
         print("start recording: " + url.absoluteString)
         let session = AVAudioSession.sharedInstance()
@@ -105,10 +107,21 @@ AVAudioPlayerDelegate {
         }
     }
     
+    func loadAudioSignal(audioURL: URL) -> (signal: [Float], rate: Double, frameCount: Int) {
+        let file = try! AVAudioFile(forReading: audioURL)
+        let format = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: file.fileFormat.sampleRate, channels: file.fileFormat.channelCount, interleaved: false)
+        let buf = AVAudioPCMBuffer(pcmFormat: format!, frameCapacity: UInt32(file.length))
+        try! file.read(into: buf!) // You probably want better error handling
+        let floatArray = Array(UnsafeBufferPointer(start: buf!.floatChannelData?[0], count:Int(buf!.frameLength)))
+        return (signal: floatArray, rate: file.fileFormat.sampleRate, frameCount: Int(file.length))
+    }
+    
+    
     // Path for saving/retreiving the audio file
     func getAudioFileUrl(name: String) -> URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let docsDirect = paths[0]
+        
         
         return docsDirect.appendingPathComponent(name + ".m4a")
     }
@@ -132,6 +145,7 @@ AVAudioPlayerDelegate {
     
     // Stop recording
     func finishRecording() {
+        
         print("finish recording")
         audioRecorder?.stop()
         isRecording = false
@@ -161,21 +175,20 @@ AVAudioPlayerDelegate {
     
     
     
-    
     func postAudio(fileName: String, herokuURL: String) {
         
         let url = getAudioFileUrl(name: fileName)
-    
+        
         Alamofire.upload(
             multipartFormData: { multipartFormData in
                 multipartFormData.append(url, withName: fileName, fileName: fileName, mimeType: "audio/x-m4a")
-
+                
         },
             to: herokuURL,
             encodingCompletion: { encodingResult in
                 switch encodingResult {
                 case .success(let upload, _, _):
-                    upload.responseString { response in
+                    upload.responseJSON { response in
                         debugPrint(response)
                     }
                 case .failure(let encodingError):
@@ -183,9 +196,9 @@ AVAudioPlayerDelegate {
                 }
         }
         )
-    
+        
     }
-
+    
     @IBAction func getdata(_ sender: Any) {
         getProcessedAudio()
     }

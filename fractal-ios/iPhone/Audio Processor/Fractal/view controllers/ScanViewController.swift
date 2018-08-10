@@ -166,6 +166,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         
     }
     
+    
     @IBAction func contralateralAction(_ sender: UIButton) {
         currentScanMode = .contralateral
         updateUI()
