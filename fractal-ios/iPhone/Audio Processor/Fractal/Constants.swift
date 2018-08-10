@@ -10,6 +10,9 @@ import Foundation
 import UIKit
 
 struct Strings {
+    
+    static let CONTRALATERAL_HEROKU_URL = "https://emilys-server.herokuapp.com/save_audio_1"
+    static let SUSPECTED_HEROKU_URL = "https://emilys-server.herokuapp.com/save_audio_2"
     // spaces are for margins bc i am lazy
     static let SCANNING = "   Scan in progress"
     static let CANCELLED = "   Scan cancelled. Tap to retry."

@@ -12,24 +12,23 @@ import AVFoundation
 import AudioKit
 import AudioKitUI
 import CoreBluetooth
+import Alamofire
 
 class ScanViewController: UIViewController, AVAudioRecorderDelegate,
 AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
+
     
-    let INDEX_PLAY_BTN = 1
-    let INDEX_DEL_BTN = 2
+    var numAudioFilesPosted = 0
+    
     
     var contralateralScanViewModel = ScanViewModel()
     var suspectedScanViewModel = ScanViewModel()
-    
-  
 
     @IBOutlet weak var suspectedStatusLabel: UILabel!
     @IBOutlet weak var contralateralStatusLabel: UILabel!
     @IBOutlet weak var suspectedBackgroundView: UIView!
     @IBOutlet weak var contralateralBackgroundView: UIView!
-    
-    
+
     // how long each recording should be
     var recordingSeconds = 15.0
     
@@ -63,12 +62,12 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         super.viewDidLoad()
         
         // set up scan view models
-        contralateralScanViewModel = ScanViewModel(filename: "contra",
+        contralateralScanViewModel = ScanViewModel(filename: "audio1",
                                                    location: .Contralateral,
                                                    progressLabel: contralateralStatusLabel,
                                                    playbackButton: contralateralStackView.arrangedSubviews[2] as! UIButton, bgView: contralateralBackgroundView, deleteButton: contralateralStackView.arrangedSubviews[1] as! UIButton, selectButton: contralateralButton)
         
-        suspectedScanViewModel = ScanViewModel(filename: "suspected",
+        suspectedScanViewModel = ScanViewModel(filename: "audio2",
                                                    location: .Suspected,
                                                    progressLabel: suspectedStatusLabel,
                                                    playbackButton: suspectedStackView.arrangedSubviews[2] as! UIButton, bgView: suspectedBackgroundView, deleteButton: suspectedStackView.arrangedSubviews[1] as! UIButton, selectButton: contralateralButton)
@@ -95,7 +94,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         if isUsingBluetooth {
             peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
         }
-        updateIncomingData()
+        createNotificationForDataFromArduino()
         
     }
     
@@ -155,7 +154,6 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
             switch scanState.progress {
             case .scanInProgress:
                 // TODO: maybe change color instead of hiding it
-                setupPlot()
                 // audioPlot.isHidden = false
                 scanState.progressLabel.text = Strings.SCANNING
             case .scanCancelled:
@@ -192,7 +190,6 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         }
     }
     
-    
     func switchSelectedState() {
         assert(!bothScansComplete())
         contralateralScanViewModel.isSelected = !contralateralScanViewModel.isSelected
@@ -201,8 +198,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     }
     
     // MARK: Bluetooth
-    func updateIncomingData () {
-        
+    func createNotificationForDataFromArduino() {
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "Notify"), object: nil , queue: nil) {
             notification in
             
@@ -218,10 +214,10 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
             
             if self.bothScansComplete() {
                 print("both scans completE")
-                //self.postToHeroku()
+                self.postToHeroku()
                 return
             }
-            
+      
             if (self.contralateralScanViewModel.canStartQuickScan) {
                 self.startScan(for: self.contralateralScanViewModel)
             }
@@ -245,7 +241,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         viewModel.setScanProgress(to: .scanInProgress)
         updateUI()
         // todo: add setting for switching b/w sounds
-        recordingSeconds = 15
+        recordingSeconds = 4
         
         startRecording(filename: viewModel.filename)
         startSelectedSoundFile()
@@ -300,36 +296,12 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         // Dispose of any resources that can be recreated.
     }
     
-    //    @IBAction func onRecordClick(_ sender: Any) {
-    //
-    //        guard let url = URL(string: "https://emilys-server.herokuapp.com/") else { return }
-    //
-    //        let session = URLSession.shared
-    //        session.dataTask(with: url) { (data, response, error) in
-    //            if let response = response {
-    //                print(response)
-    //            }
-    //
-    //            if let data = data {
-    //                do {
-    //                    let json = try JSONSerialization.jsonObject(with: data, options: [])
-    //                    print(json)
-    //                } catch {
-    //                    print(error)
-    //                }
-    //            }
-    //
-    //
-    //        }.resume()
-    //    }
-    
-    @IBAction func play(_ sender: UIButton) {
-        //playSound()
-        // TODO
-    }
     
     func startRecording(filename: String) {
         //1. create the session
+        
+        let url = getAudioFileUrl(name: filename)
+        print("start recording: " + url.absoluteString)
         let session = AVAudioSession.sharedInstance()
         
         do {
@@ -344,7 +316,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
                 AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
             ]
             // 4. create the audio recording, and assign ourselves as the delegate
-            audioRecorder = try AVAudioRecorder(url: getAudioFileUrl(filename: filename), settings: settings)
+            audioRecorder = try AVAudioRecorder(url: url, settings: settings)
             audioRecorder?.delegate = self
             audioRecorder?.record()
             
@@ -358,6 +330,12 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         }
     }
     
+    
+    
+    
+    // MARK: audio methods
+    
+    
     // Stop recording
     func finishRecording() {
         audioRecorder?.stop()
@@ -366,10 +344,10 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     }
     
     // Path for saving/retreiving the audio file
-    func getAudioFileUrl(filename: String) -> URL {
+    func getAudioFileUrl(name: String) -> URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let docsDirect = paths[0]
-        return docsDirect.appendingPathComponent(filename + ".mp4")
+        return docsDirect.appendingPathComponent(name + ".m4a")
     }
     
     func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
@@ -379,7 +357,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
             // Recording interrupted by other reasons like call coming, reached time limit.
         }
     }
-
+    
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         if flag {
             // TODO
@@ -388,29 +366,69 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         }
     }
     
-    func postToHeroku() {
+    func postAudio(fileName: String, herokuURL: String) {
+        let url = getAudioFileUrl(name: fileName)
+        Alamofire.upload(
+            multipartFormData: { multipartFormData in
+                multipartFormData.append(url, withName: fileName, fileName: fileName, mimeType: "audio/x-m4a")
+                
+        },
+            to: herokuURL,
+            encodingCompletion: { encodingResult in
+                switch encodingResult {
+                case .success(let upload, _, _):
+                    upload.responseString { response in
+                        debugPrint(response)
+                        self.numAudioFilesPosted += 1
+                        if (self.numAudioFilesPosted == 2) {
+                            self.getProcessedAudio()
+                        }
+                        
+                    }
+                case .failure(let encodingError):
+                    print(encodingError)
+                }
+        }
+        )
+    }
+    
+    // get processed audio from server
+    func getProcessedAudio() {
         guard let url = URL(string: "https://emilys-server.herokuapp.com/process_audio") else { return }
         var request = URLRequest(url: url)
-        request.setValue("audio/x-wav", forHTTPHeaderField: "Content-Type")
-        request.httpMethod = "POST"
+        request.httpMethod = "GET"
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {
                 print(error as Any)
                 return
             }
             DispatchQueue.main.async {
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                var resultsViewController = storyboard.instantiateViewController(withIdentifier: "ResultsViewController") as! ResultsViewController
-                resultsViewController.resultsImage = UIImage(data: data)
-                self.navigationController?.pushViewController(resultsViewController, animated: true)
+                do {
+                    let stringDic = try JSONSerialization.jsonObject(with: data, options: []) as? [String : Any]
+                    print(stringDic)
+                    
+                    
+                } catch let error {
+                    print(error)
+                }
             }
         }
         task.resume()
     }
-    
+
     private func startSelectedSoundFile() {
         let stringToSend = String(describing: trackIdSegControl.selectedSegmentIndex)
         writeValue(data: stringToSend)
+    }
+    
+    func postToHeroku() {
+        assert(bothScansComplete())
+        // post contralateral
+        postAudio(fileName: contralateralScanViewModel.filename, herokuURL: Strings.CONTRALATERAL_HEROKU_URL)
+        
+        // post contralateral
+        postAudio(fileName: suspectedScanViewModel.filename, herokuURL: Strings.SUSPECTED_HEROKU_URL)
+        
     }
 }
 
