@@ -68,7 +68,8 @@ AVAudioPlayerDelegate {
     }
     
     @IBAction func processButtonAction(_ sender: UIButton) {
-        postAudio(fileName: testFile2Name, herokuURL: "https://emilys-server.herokuapp.com/process_audio")
+    
+        let rlJSONObj = getProcessedAudio()
     }
     
     func startRecording(_ recordingName: String) {
@@ -138,6 +139,29 @@ AVAudioPlayerDelegate {
     }
     
     
+    func getProcessedAudio() {
+        
+        guard let url = URL(string: "https://emilys-server.herokuapp.com/process_audio") else { return }
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print(error as Any)
+                return
+            }
+            DispatchQueue.main.async {
+                // do whatever
+                print("dataaaa")
+                print(response)
+            }
+        }
+        task.resume()
+        
+    }
+    
+    
+    
+    
     func postAudio(fileName: String, herokuURL: String) {
         
         let url = getAudioFileUrl(name: fileName)
@@ -162,6 +186,9 @@ AVAudioPlayerDelegate {
     
     }
 
+    @IBAction func getdata(_ sender: Any) {
+        getProcessedAudio()
+    }
     
     func playSound(urlName: String){
         let url = getAudioFileUrl(name: urlName)
