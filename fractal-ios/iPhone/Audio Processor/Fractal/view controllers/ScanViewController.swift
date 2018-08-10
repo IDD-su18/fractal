@@ -19,13 +19,10 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     let INDEX_PLAY_BTN = 1
     let INDEX_DEL_BTN = 2
     
-    var contralateralScanViewModel: ScanViewModel
-    var suspectedScanViewModel: ScanViewModel
+    var contralateralScanViewModel = ScanViewModel()
+    var suspectedScanViewModel = ScanViewModel()
     
-    private var bothScansComplete: Bool = {
-        return contralateralScanViewModel.progress == .finishedScanning &&
-        suspectedScanViewModel.progress == .finishedScanning
-    }
+  
 
     @IBOutlet weak var suspectedStatusLabel: UILabel!
     @IBOutlet weak var contralateralStatusLabel: UILabel!
@@ -71,6 +68,12 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
                                                    progressLabel: contralateralStatusLabel,
                                                    playbackButton: contralateralStackView.arrangedSubviews[2] as! UIButton, bgView: contralateralBackgroundView, deleteButton: contralateralStackView.arrangedSubviews[1] as! UIButton, selectButton: contralateralButton)
         
+        suspectedScanViewModel = ScanViewModel(filename: "suspected",
+                                                   location: .Suspected,
+                                                   progressLabel: suspectedStatusLabel,
+                                                   playbackButton: suspectedStackView.arrangedSubviews[2] as! UIButton, bgView: suspectedBackgroundView, deleteButton: suspectedStackView.arrangedSubviews[1] as! UIButton, selectButton: contralateralButton)
+        
+        
         
         // audiokit
         AKSettings.audioInputEnabled = true
@@ -93,7 +96,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
             peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
         }
         updateIncomingData()
-        updateUI()
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -105,6 +108,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
             AKLog("AudioKit did not start!")
         }
         setupPlot()
+        updateUI()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -170,6 +174,13 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
                 scanState.progressLabel.text = Strings.SCAN_COMPLETE
                 scanState.deleteButton.isHidden = false
                 scanState.playbackButton.isHidden = false
+                
+                if !bothScansComplete() {
+                    if scanState.isSelected {
+                        switchSelectedState()
+                    }
+                    
+                }
             }
             if scanState.isSelected {
                 scanState.bgView.backgroundColor = Colors.SELECTED_BTN
@@ -178,6 +189,14 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
                 scanState.bgView.backgroundColor = Colors.DESELECTED_BTN
             }
         }
+    }
+    
+    
+    func switchSelectedState() {
+        assert(!bothScansComplete())
+        contralateralScanViewModel.isSelected = !contralateralScanViewModel.isSelected
+        suspectedScanViewModel.isSelected = !suspectedScanViewModel.isSelected
+        updateUI()
     }
     
     // MARK: Bluetooth
@@ -196,8 +215,9 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
                 return
             }
             
-            if self.bothScansComplete {
-                self.postToHeroku()
+            if self.bothScansComplete() {
+                print("both scans completE")
+                //self.postToHeroku()
                 return
             }
             
@@ -208,6 +228,11 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
                 self.startScan(for: self.suspectedScanViewModel)
             }
         }
+    }
+    
+    func bothScansComplete() -> Bool  {
+        return ((self.contralateralScanViewModel.progress == .finishedScanning) &&
+            (self.suspectedScanViewModel.progress == .finishedScanning))
     }
     
     func startScan(for viewModel: ScanViewModel) {
@@ -353,7 +378,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
             // Recording interrupted by other reasons like call coming, reached time limit.
         }
     }
-    
+
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         if flag {
             // TODO
@@ -373,17 +398,13 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
                 return
             }
             DispatchQueue.main.async {
-                var resultsViewController = self.instantiateViewController(withID: "ResultsViewController") as! ResultsViewController
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                var resultsViewController = storyboard.instantiateViewController(withIdentifier: "ResultsViewController") as! ResultsViewController
                 resultsViewController.resultsImage = UIImage(data: data)
                 self.navigationController?.pushViewController(resultsViewController, animated: true)
             }
         }
         task.resume()
-    }
-    
-    private func instantiateViewController(withID id: String) -> UIViewController {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        return storyboard.instantiateViewController(withIdentifier: id)
     }
     
     private func startSelectedSoundFile() {

@@ -55,8 +55,10 @@ class ScanViewModel {
         self.deleteButton = deleteButton
         self.playbackButton = playbackButton
         self.bgView = bgView
-        
-        
+    }
+    
+    convenience init() {
+        self.init(filename: "test", location: .Contralateral, progressLabel: UILabel(), playbackButton: UIButton(), bgView: UIView(), deleteButton: UIButton(), selectButton: UIButton())
     }
     
 }
