@@ -47,7 +47,7 @@ AVAudioPlayerDelegate {
     }
     
     @IBAction func send1(_ sender: UIButton) {
-        postAudio(fileName: testFile1Name, herokuURL: "https://emilys-server.herokuapp.com/save_audio_1/post")
+        postAudio(fileName: testFile1Name, herokuURL: "https://emilys-server.herokuapp.com/save_audio_1")
     }
     
     
@@ -67,7 +67,7 @@ AVAudioPlayerDelegate {
     
     
     @IBAction func send2(_ sender: Any) {
-        postAudio(fileName: testFile2Name, herokuURL: "https://emilys-server.herokuapp.com/save_audio_2/post")
+        postAudio(fileName: testFile2Name, herokuURL: "https://emilys-server.herokuapp.com/save_audio_2")
     }
     
     @IBAction func processButtonAction(_ sender: UIButton) {
