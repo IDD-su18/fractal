@@ -327,10 +327,10 @@
             </objects>
             <point key="canvasLocation" x="971.25" y="32.74647887323944"/>
         </scene>
-        <!--View Controller-->
+        <!--Test View Controller-->
         <scene sceneID="OQN-RZ-Fxi">
             <objects>
-                <viewController id="ysy-Wz-31O" sceneMemberID="viewController">
+                <viewController id="ysy-Wz-31O" customClass="TestViewController" customModule="Audio_Processor" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="tRA-6Q-MhD">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -344,12 +344,84 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="iS6-it-nhd">
+                                <rect key="frame" x="0.0" y="276" width="320" height="80"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ean-IU-Te7">
+                                        <rect key="frame" x="0.0" y="0.0" width="106.5" height="80"/>
+                                        <state key="normal" title="record"/>
+                                        <connections>
+                                            <action selector="record1:" destination="ysy-Wz-31O" eventType="touchUpInside" id="sTk-4Z-148"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9aU-oD-tXA">
+                                        <rect key="frame" x="106.5" y="0.0" width="107" height="80"/>
+                                        <state key="normal" title="play"/>
+                                        <connections>
+                                            <action selector="play1:" destination="ysy-Wz-31O" eventType="touchUpInside" id="zRH-A3-82N"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o5E-ZF-Hk6">
+                                        <rect key="frame" x="213.5" y="0.0" width="106.5" height="80"/>
+                                        <state key="normal" title="send"/>
+                                        <connections>
+                                            <action selector="send1:" destination="ysy-Wz-31O" eventType="touchUpInside" id="lev-Ng-rGM"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="80" id="p0Z-ah-fYF"/>
+                                </constraints>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="QzH-ao-y55">
+                                <rect key="frame" x="0.0" y="373" width="320" height="80"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BXT-s6-IXB">
+                                        <rect key="frame" x="0.0" y="0.0" width="106.5" height="80"/>
+                                        <state key="normal" title="record"/>
+                                        <connections>
+                                            <action selector="record2:" destination="ysy-Wz-31O" eventType="touchUpInside" id="EJa-Gg-zeN"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9L0-SQ-ziK">
+                                        <rect key="frame" x="106.5" y="0.0" width="107" height="80"/>
+                                        <state key="normal" title="play"/>
+                                        <connections>
+                                            <action selector="play2:" destination="ysy-Wz-31O" eventType="touchUpInside" id="eB1-wI-62v"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cbr-Hl-Qz4">
+                                        <rect key="frame" x="213.5" y="0.0" width="106.5" height="80"/>
+                                        <state key="normal" title="send"/>
+                                        <connections>
+                                            <action selector="send2:" destination="ysy-Wz-31O" eventType="touchUpInside" id="moF-3d-dyL"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nQc-Mw-uEp">
+                                <rect key="frame" x="133" y="483" width="55" height="80"/>
+                                <state key="normal" title="process"/>
+                                <connections>
+                                    <action selector="processButtonAction:" destination="ysy-Wz-31O" eventType="touchUpInside" id="d4W-yF-TXG"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="WnX-eV-8Dy" firstAttribute="leading" secondItem="uOI-DU-f7P" secondAttribute="leading" constant="57" id="7CS-Wl-Z76"/>
+                            <constraint firstItem="BXT-s6-IXB" firstAttribute="height" secondItem="Ean-IU-Te7" secondAttribute="height" id="7qx-td-qPD"/>
+                            <constraint firstItem="iS6-it-nhd" firstAttribute="centerX" secondItem="uOI-DU-f7P" secondAttribute="centerX" id="BzO-Ib-q2P"/>
                             <constraint firstItem="WnX-eV-8Dy" firstAttribute="top" secondItem="uOI-DU-f7P" secondAttribute="top" constant="12" id="HFL-iJ-vYW"/>
                             <constraint firstItem="WnX-eV-8Dy" firstAttribute="centerX" secondItem="uOI-DU-f7P" secondAttribute="centerX" id="UDG-5l-OFa"/>
+                            <constraint firstItem="QzH-ao-y55" firstAttribute="centerX" secondItem="uOI-DU-f7P" secondAttribute="centerX" id="V4E-lU-tao"/>
+                            <constraint firstItem="iS6-it-nhd" firstAttribute="centerY" secondItem="uOI-DU-f7P" secondAttribute="centerY" id="VCG-A7-Xzo"/>
+                            <constraint firstItem="iS6-it-nhd" firstAttribute="width" secondItem="tRA-6Q-MhD" secondAttribute="width" id="VGu-PC-vsK"/>
+                            <constraint firstItem="nQc-Mw-uEp" firstAttribute="height" secondItem="9L0-SQ-ziK" secondAttribute="height" id="a0y-2X-zhZ"/>
+                            <constraint firstItem="nQc-Mw-uEp" firstAttribute="centerX" secondItem="uOI-DU-f7P" secondAttribute="centerX" id="ddV-1p-SN3"/>
+                            <constraint firstItem="QzH-ao-y55" firstAttribute="width" secondItem="tRA-6Q-MhD" secondAttribute="width" id="mh4-Ww-q8J"/>
+                            <constraint firstItem="QzH-ao-y55" firstAttribute="top" secondItem="iS6-it-nhd" secondAttribute="bottom" constant="17" id="yJD-O1-HQv"/>
+                            <constraint firstItem="nQc-Mw-uEp" firstAttribute="top" secondItem="9L0-SQ-ziK" secondAttribute="bottom" constant="30" id="ySw-lv-Ptp"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="uOI-DU-f7P"/>
                     </view>

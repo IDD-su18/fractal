@@ -47,9 +47,8 @@ class ResultsViewController: UIViewController, AVAudioPlayerDelegate {
     func getAudioFileUrl(urlName: String) -> URL{
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let docsDirect = paths[0]
-        let audioUrl = docsDirect.appendingPathComponent(urlName
-            + ".m4a")
-        return audioUrl
+        
+        return docsDirect.appendingPathComponent(urlName + ".mp4")
     }
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {

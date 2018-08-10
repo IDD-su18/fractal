@@ -11,6 +11,8 @@
 		450CB78D2112C7F600661FAD /* UUIDKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450CB78C2112C7F600661FAD /* UUIDKey.swift */; };
 		450CB78F2112C85000661FAD /* BLECentralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450CB78E2112C85000661FAD /* BLECentralViewController.swift */; };
 		454DC41621130D620095FBBC /* ResultsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 454DC41521130D620095FBBC /* ResultsViewController.swift */; };
+		45DD01F5211D5D2B001C0BA6 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DD01F4211D5D2B001C0BA6 /* TestViewController.swift */; };
+		45DD01F7211D60CA001C0BA6 /* UploadController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DD01F6211D60CA001C0BA6 /* UploadController.swift */; };
 		70E01867AA9694A6D50E1732 /* Pods_Audio_Processor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B38A6274E18B69C44AEB83C /* Pods_Audio_Processor.framework */; };
 		C9EDC463210A968300F23F55 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9EDC462210A968300F23F55 /* AppDelegate.swift */; };
 		C9EDC465210A968300F23F55 /* ScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9EDC464210A968300F23F55 /* ScanViewController.swift */; };
@@ -25,6 +27,8 @@
 		450CB78C2112C7F600661FAD /* UUIDKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUIDKey.swift; sourceTree = "<group>"; };
 		450CB78E2112C85000661FAD /* BLECentralViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLECentralViewController.swift; sourceTree = "<group>"; };
 		454DC41521130D620095FBBC /* ResultsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultsViewController.swift; sourceTree = "<group>"; };
+		45DD01F4211D5D2B001C0BA6 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
+		45DD01F6211D60CA001C0BA6 /* UploadController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadController.swift; sourceTree = "<group>"; };
 		4B38A6274E18B69C44AEB83C /* Pods_Audio_Processor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Audio_Processor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9EDC45F210A968300F23F55 /* Audio Processor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Audio Processor.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9EDC462210A968300F23F55 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -90,6 +94,8 @@
 			children = (
 				C9EDC462210A968300F23F55 /* AppDelegate.swift */,
 				450CB78A2112C73300661FAD /* BluetoothDeviceTableViewCell.swift */,
+				45DD01F4211D5D2B001C0BA6 /* TestViewController.swift */,
+				45DD01F6211D60CA001C0BA6 /* UploadController.swift */,
 				452BA4DE211C4ADE00778CA7 /* view controllers */,
 				C9EDC466210A968300F23F55 /* Main.storyboard */,
 				450CB78C2112C7F600661FAD /* UUIDKey.swift */,
@@ -119,6 +125,7 @@
 				C9EDC45B210A968300F23F55 /* Sources */,
 				C9EDC45C210A968300F23F55 /* Frameworks */,
 				C9EDC45D210A968300F23F55 /* Resources */,
+				334F01F253702393C130CF97 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -176,6 +183,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		334F01F253702393C130CF97 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Audio Processor/Pods-Audio Processor-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Audio Processor/Pods-Audio Processor-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		DF5D3D19B270D54A57A1A49B /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -201,7 +226,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				45DD01F5211D5D2B001C0BA6 /* TestViewController.swift in Sources */,
 				450CB78D2112C7F600661FAD /* UUIDKey.swift in Sources */,
+				45DD01F7211D60CA001C0BA6 /* UploadController.swift in Sources */,
 				450CB78F2112C85000661FAD /* BLECentralViewController.swift in Sources */,
 				450CB78B2112C73300661FAD /* BluetoothDeviceTableViewCell.swift in Sources */,
 				C9EDC465210A968300F23F55 /* ScanViewController.swift in Sources */,
