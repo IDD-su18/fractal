@@ -23,8 +23,8 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     var suspectedScanViewModel: ScanViewModel
     
     private var bothScansComplete: Bool = {
-        return contralateralScanViewModel.progress = .finishedScanning &&
-        suspectedScanViewModel.progress = .finishedScanning
+        return contralateralScanViewModel.progress == .finishedScanning &&
+        suspectedScanViewModel.progress == .finishedScanning
     }
 
     @IBOutlet weak var suspectedStatusLabel: UILabel!
@@ -62,13 +62,15 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     var player : AVAudioPlayer?
     var recordingExists = false
     
-    //    var recordingSession: AVAudioSession!
-    //    var audioRecorder: AVAudioRecorder!
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Do any additional setup after loading the view, typically from a nib.
+        // set up scan view models
+        contralateralScanViewModel = ScanViewModel(filename: "contra",
+                                                   location: .Contralateral,
+                                                   progressLabel: contralateralStatusLabel,
+                                                   playbackButton: contralateralStackView.arrangedSubviews[2] as! UIButton, bgView: contralateralBackgroundView, deleteButton: contralateralStackView.arrangedSubviews[1] as! UIButton, selectButton: contralateralButton)
+        
         
         // audiokit
         AKSettings.audioInputEnabled = true
@@ -86,7 +88,6 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
                 // User denied microphone. Tell them off!
             }
         }
-        print(getAudioFileUrl())
         
         if isUsingBluetooth {
             peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
@@ -208,11 +209,6 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
             }
         }
     }
-
-    
-    
-    
-    
     
     func startScan(for viewModel: ScanViewModel) {
         /* update UI for scan in progress
@@ -225,7 +221,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         // todo: add setting for switching b/w sounds
         recordingSeconds = 15
         
-        startRecording()
+        startRecording(filename: viewModel.filename)
         startSelectedSoundFile()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + recordingSeconds) {
@@ -306,7 +302,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         // TODO
     }
     
-    func startRecording(viewModel: ScanViewModel) {
+    func startRecording(filename: String) {
         //1. create the session
         let session = AVAudioSession.sharedInstance()
         
@@ -322,7 +318,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
                 AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
             ]
             // 4. create the audio recording, and assign ourselves as the delegate
-            audioRecorder = try AVAudioRecorder(url: getAudioFileUrl(viewModel: viewModel), settings: settings)
+            audioRecorder = try AVAudioRecorder(url: getAudioFileUrl(filename: filename), settings: settings)
             audioRecorder?.delegate = self
             audioRecorder?.record()
             
@@ -344,11 +340,10 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     }
     
     // Path for saving/retreiving the audio file
-    func getAudioFileUrl(viewModel: ScanViewModel) -> URL{
+    func getAudioFileUrl(filename: String) -> URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let docsDirect = paths[0]
-        
-        return docsDirect.appendingPathComponent(viewModel.filename + ".mp4")
+        return docsDirect.appendingPathComponent(filename + ".mp4")
     }
     
     func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {

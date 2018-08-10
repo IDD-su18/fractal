@@ -43,16 +43,20 @@ class ScanViewModel {
         self.progress = newProgress
     }
     
-    init(progressLabel: UILabel, playbackButton: UIButton, bgView: UIView, deleteButton: UIButton, selectButton: UIButton) {
-        // tODO finish initizing
-        
+    init(filename: String, location: ScanLocation, progressLabel: UILabel, playbackButton: UIButton, bgView: UIView, deleteButton: UIButton, selectButton: UIButton) {
+        self.filename = filename
+        self.location = location
+        // make contralateral selected first
+        self.isSelected = location == .Contralateral
         
         // UI elements
         self.progressLabel = progressLabel
+        self.selectButton = selectButton
+        self.deleteButton = deleteButton
         self.playbackButton = playbackButton
         self.bgView = bgView
-        self.deleteButton = deleteButton
-        self.selectButton = selectButton
+        
+        
     }
     
 }
