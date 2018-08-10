@@ -112,7 +112,6 @@ void setup(void)
   pinMode(A3, INPUT);
   pinMode(A4, INPUT);
   pinMode(buttonPin, INPUT_PULLUP);
-  pinMode(ledPin, INPUT_PULLUP);
 //  while (!Serial);  // required for Flora & Micro
 //  delay(500);
 //
@@ -177,7 +176,7 @@ void loop(void)
 
 
   detectButtonPress();
-  //pinMode(ledPin, OUTPUT);
+  digitalWrite(ledPin, HIGH);
   // Check for user input
 
   // read the state of the pushbutton value:
@@ -250,10 +249,10 @@ void toggleSoundPins(char pinNumber) {
   switch (pinNumber) {
     case '0':
     Serial.println("case 0");
-      setPinHigh(A5);
+      setPinHigh(A1);
       break;
     case '1':
-      setPinHigh(A1);
+      setPinHigh(A5);
       break;
     case '2':
       setPinHigh(A2);
