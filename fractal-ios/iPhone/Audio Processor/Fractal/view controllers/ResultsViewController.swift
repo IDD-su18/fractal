@@ -8,23 +8,81 @@
 
 import UIKit
 import AVFoundation
+import SwiftChart
 
-class ResultsViewController: UIViewController, AVAudioPlayerDelegate {
-
-    @IBOutlet weak var imageView: UIImageView!
+class ResultsViewController: UIViewController {
+    
+    @IBOutlet weak var chart: Chart!
     
     var player : AVAudioPlayer?
-    var resultsImage: UIImage?
+    var jsonDict: [String : Any]?
+    
+
+    var xHealthy: [Float] = []
+    var yHealthy: [Float] = []
+    var xCf: [Float] = []
+    var yCf: [Float] = []
+    
+    var data1 = [(1.0,1.0)]
+    var data2 = [(1.0,1.0)]
+    
+    @IBOutlet weak var transmissionRateLabel: UILabel!
     
     override func viewDidLoad() {
+    
         super.viewDidLoad()
-        imageView.contentMode = .scaleAspectFit
         
-        if let resultsImage = resultsImage {
-            imageView.image = resultsImage
+        navigationItem.title = "Magnitude vs. Frequency"
+        parseJSON()
+        let chart = Chart(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 400))
+        
+        chart.center = view.center
+        chart.delegate = self
+        
+        chart.minX = 0
+        chart.maxX = 1200
+        chart.minY = 0
+        chart.maxY = 150
+        chart.xLabels = [0, 200, 400, 600, 800, 1000, 1200]
+        
+
+        let series1 = ChartSeries(data: data1)
+        series1.area = true
+        series1.color = ChartColors.blueColor()
+        let series2 = ChartSeries(data: data2)
+        series1.area = true
+        series2.color = ChartColors.redColor()
+        chart.add(series1)
+        chart.add(series2)
+        view.addSubview(chart)
+    }
+    
+    
+    func parseJSON() {
+        let xHealthy = jsonDict!["x_healthy"] as! [Double]
+        let yHealthy = jsonDict!["y_healthy"] as! [Double]
+        for i in 0..<xHealthy.count {
+            data1.append((x: xHealthy[i], y: yHealthy[i]))
+        }
+        
+        
+        var transmissionRate = (jsonDict!["tr"] as! Double)*100
+        transmissionRate = transmissionRate.rounded(toPlaces: 1)
+        transmissionRateLabel.text = String(describing: transmissionRate) + "%"
+        
+        let xCf = jsonDict!["x_cf"] as! [Double]
+        let yCf = jsonDict!["y_cf"] as! [Double]
+        for i in 0..<xCf.count {
+            data2.append((x: xCf[i], y: yCf[i]))
         }
     }
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
 
+    }
+    
     func playSound(urlName: String){
         let url = getAudioFileUrl(urlName: urlName)
         
@@ -52,6 +110,18 @@ class ResultsViewController: UIViewController, AVAudioPlayerDelegate {
         return audioUrl
     }
     
+    @IBAction func playbackSuspected(_ sender: UIButton) {
+        playSound(urlName: "audio2")
+    }
+    
+    @IBAction func playbackContralateral(_ sender: UIButton) {
+        playSound(urlName: "audio1")
+    }
+}
+
+extension ResultsViewController: AVAudioPlayerDelegate {
+    
+    
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         if flag {
             
@@ -59,16 +129,35 @@ class ResultsViewController: UIViewController, AVAudioPlayerDelegate {
             // Playing interrupted by other reasons like call coming, the sound has not finished playing.
         }
     }
-    @IBAction func playbackSuspected(_ sender: UIButton) {
-        playSound(urlName: "suspected")
+}
+
+extension ResultsViewController: ChartDelegate {
+    
+    // Chart delegate
+    func didTouchChart(_ chart: Chart, indexes: Array<Int?>, x: Double, left: CGFloat) {
+        for (seriesIndex, dataIndex) in indexes.enumerated() {
+            if dataIndex != nil {
+                // The series at `seriesIndex` is that which has been touched
+                let value = chart.valueForSeries(seriesIndex, atIndex: dataIndex)
+            }
+        }
     }
     
-    @IBAction func playbackContralateral(_ sender: UIButton) {
-        playSound(urlName: "contralateral")
+    func didFinishTouchingChart(_ chart: Chart) {
+        // Do something when finished
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    func didEndTouchingChart(_ chart: Chart) {
+        // Do something when ending touching chart
+    }
+
+}
+
+
+extension Double {
+    /// Rounds the double to decimal places value
+    func rounded(toPlaces places:Int) -> Double {
+        let divisor = pow(10.0, Double(places))
+        return (self * divisor).rounded() / divisor
     }
 }

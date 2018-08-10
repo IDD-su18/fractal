@@ -183,6 +183,9 @@
                                                         <state key="normal" title="play">
                                                             <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         </state>
+                                                        <connections>
+                                                            <action selector="playContralateral:" destination="BYZ-38-t0r" eventType="touchUpInside" id="I62-0D-jA1"/>
+                                                        </connections>
                                                     </button>
                                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DWf-Ze-bHh">
                                                         <rect key="frame" x="-14.5" y="0.0" width="70" height="60"/>
@@ -250,6 +253,9 @@
                                                         <state key="normal" title="play">
                                                             <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         </state>
+                                                        <connections>
+                                                            <action selector="playSuspected:" destination="BYZ-38-t0r" eventType="touchUpInside" id="a2g-LM-zNh"/>
+                                                        </connections>
                                                     </button>
                                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1N3-ga-N3h">
                                                         <rect key="frame" x="-14" y="0.0" width="70" height="60"/>
@@ -327,6 +333,75 @@
             </objects>
             <point key="canvasLocation" x="971.25" y="32.74647887323944"/>
         </scene>
+        <!--Results View Controller-->
+        <scene sceneID="Qxd-6q-tqw">
+            <objects>
+                <viewController storyboardIdentifier="ResultsViewController" id="M4K-Dy-L8D" customClass="ResultsViewController" customModule="Audio_Processor" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="y85-Va-EsY">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Frequency (Hz)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Ga-UC-SWF">
+                                <rect key="frame" x="101.5" y="493.5" width="118.5" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="Oxw-zV-cdy">
+                                <rect key="frame" x="32.5" y="534" width="256" height="18"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Calculated Transmission Rate:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nKb-pa-TRg">
+                                        <rect key="frame" x="0.0" y="0.0" width="194.5" height="18"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="40%" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2f4-Wj-clR">
+                                        <rect key="frame" x="222.5" y="0.0" width="33.5" height="18"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="ora-uK-vhA">
+                                <rect key="frame" x="228.5" y="30" width="81.5" height="34"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="suspected" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9tb-Dv-Kvd">
+                                        <rect key="frame" x="0.0" y="0.0" width="81.5" height="17"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <color key="textColor" red="1" green="0.046772837529804212" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="contralateral" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fK7-Jf-xaW">
+                                        <rect key="frame" x="0.0" y="17" width="81.5" height="17"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="Oxw-zV-cdy" firstAttribute="width" secondItem="y85-Va-EsY" secondAttribute="width" multiplier="4/5" id="3DS-Tp-YB8"/>
+                            <constraint firstItem="JVF-zw-iby" firstAttribute="bottom" secondItem="Oxw-zV-cdy" secondAttribute="bottom" constant="16" id="DQa-3A-D6f"/>
+                            <constraint firstItem="JVF-zw-iby" firstAttribute="trailing" secondItem="ora-uK-vhA" secondAttribute="trailing" constant="10" id="EQ0-9A-fKN"/>
+                            <constraint firstItem="ora-uK-vhA" firstAttribute="top" secondItem="JVF-zw-iby" secondAttribute="top" constant="10" id="XyL-KD-smr"/>
+                            <constraint firstItem="Oxw-zV-cdy" firstAttribute="centerX" secondItem="JVF-zw-iby" secondAttribute="centerX" id="fMe-m6-ffP"/>
+                            <constraint firstItem="Oxw-zV-cdy" firstAttribute="top" secondItem="5Ga-UC-SWF" secondAttribute="bottom" constant="20" id="hMz-5Z-1GR"/>
+                            <constraint firstItem="5Ga-UC-SWF" firstAttribute="centerX" secondItem="JVF-zw-iby" secondAttribute="centerX" id="r4x-Lk-9lx"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="JVF-zw-iby"/>
+                    </view>
+                    <connections>
+                        <outlet property="transmissionRateLabel" destination="2f4-Wj-clR" id="eQB-bD-gPS"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="TYM-Xq-AFA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1820.625" y="5.28169014084507"/>
+        </scene>
         <!--View Controller-->
         <scene sceneID="OQN-RZ-Fxi">
             <objects>
@@ -358,55 +433,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="K1e-0v-S4i" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="969.375" y="767.95774647887322"/>
-        </scene>
-        <!--Scan results-->
-        <scene sceneID="7zd-LR-aez">
-            <objects>
-                <viewController storyboardIdentifier="ResultsViewController" title="Scan results" id="qST-Cn-ZAW" customClass="ResultsViewController" customModule="Audio_Processor" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="Tys-VK-xHH">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jE5-Mn-hQ8">
-                                <rect key="frame" x="0.0" y="20" width="320" height="314"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="314" id="ohf-ae-8Cr"/>
-                                </constraints>
-                            </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MLr-g8-FI7">
-                                <rect key="frame" x="73" y="354" width="174" height="30"/>
-                                <state key="normal" title="playback suspected scan"/>
-                                <connections>
-                                    <action selector="playbackSuspected:" destination="qST-Cn-ZAW" eventType="touchUpInside" id="bBC-VT-IDZ"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YgA-MR-gaC">
-                                <rect key="frame" x="66" y="392" width="188" height="30"/>
-                                <state key="normal" title="playback contralateral scan"/>
-                                <connections>
-                                    <action selector="playbackContralateral:" destination="qST-Cn-ZAW" eventType="touchUpInside" id="pvE-49-40h"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <constraints>
-                            <constraint firstItem="jE5-Mn-hQ8" firstAttribute="top" secondItem="MDJ-Dd-dqA" secondAttribute="top" id="3c5-o3-Ofw"/>
-                            <constraint firstItem="jE5-Mn-hQ8" firstAttribute="width" secondItem="Tys-VK-xHH" secondAttribute="width" id="Hka-AR-dLQ"/>
-                            <constraint firstItem="MLr-g8-FI7" firstAttribute="top" secondItem="jE5-Mn-hQ8" secondAttribute="bottom" constant="20" id="N1F-cq-zc4"/>
-                            <constraint firstItem="YgA-MR-gaC" firstAttribute="centerX" secondItem="MDJ-Dd-dqA" secondAttribute="centerX" id="aiS-6g-CCS"/>
-                            <constraint firstItem="jE5-Mn-hQ8" firstAttribute="centerX" secondItem="MDJ-Dd-dqA" secondAttribute="centerX" id="geC-IN-EA3"/>
-                            <constraint firstItem="YgA-MR-gaC" firstAttribute="top" secondItem="MLr-g8-FI7" secondAttribute="bottom" constant="8" id="yUg-32-pfd"/>
-                            <constraint firstItem="MLr-g8-FI7" firstAttribute="centerX" secondItem="MDJ-Dd-dqA" secondAttribute="centerX" id="zta-Ya-xvv"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="MDJ-Dd-dqA"/>
-                    </view>
-                    <connections>
-                        <outlet property="imageView" destination="jE5-Mn-hQ8" id="4PX-qE-wB1"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="NTE-D1-UpW" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1736.8" y="42.728635682158924"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="zc4-dP-M17">

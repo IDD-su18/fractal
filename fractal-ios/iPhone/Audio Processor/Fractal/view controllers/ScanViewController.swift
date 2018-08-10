@@ -114,6 +114,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         // peripheralManager?.stopAdvertising()
         // self.peripheralManager = nil
         super.viewDidDisappear(animated)
+    
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -241,7 +242,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         viewModel.setScanProgress(to: .scanInProgress)
         updateUI()
         // todo: add setting for switching b/w sounds
-        recordingSeconds = 4
+        recordingSeconds = 15
         
         startRecording(filename: viewModel.filename)
         startSelectedSoundFile()
@@ -404,9 +405,12 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
             }
             DispatchQueue.main.async {
                 do {
-                    let stringDic = try JSONSerialization.jsonObject(with: data, options: []) as? [String : Any]
-                    print(stringDic)
-                    
+                    let jsonDict = try JSONSerialization.jsonObject(with: data, options: []) as? [String : Any]
+                    print(jsonDict)
+                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                    var resultsViewController = storyboard.instantiateViewController(withIdentifier: "ResultsViewController") as! ResultsViewController
+                    resultsViewController.jsonDict = jsonDict!
+                    self.navigationController?.pushViewController(resultsViewController, animated: true)
                     
                 } catch let error {
                     print(error)
@@ -419,6 +423,30 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     private func startSelectedSoundFile() {
         let stringToSend = String(describing: trackIdSegControl.selectedSegmentIndex)
         writeValue(data: stringToSend)
+    }
+    
+    func playSound(urlName: String){
+        let url = getAudioFileUrl(name: urlName)
+        
+        do {
+            // AVAudioPlayer setting up with the saved file URL
+            let sound = try AVAudioPlayer(contentsOf: url)
+            self.player = sound
+            
+            // Here conforming to AVAudioPlayerDelegate
+            sound.delegate = self
+            sound.prepareToPlay()
+            sound.play()
+        } catch {
+            print("error loading file")
+            // couldn't load file :(
+        }
+    }
+    @IBAction func playContralateral(_ sender: UIButton) {
+        playSound(urlName: "audio1")
+    }
+    @IBAction func playSuspected(_ sender: UIButton) {
+        playSound(urlName: "audio2")
     }
     
     func postToHeroku() {
