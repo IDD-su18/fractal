@@ -130,7 +130,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         plot.shouldMirror = true
         plot.color = UIColor.blue
         audioPlot.addSubview(plot)
-        audioPlot.isHidden = true
+        // audioPlot.isHidden = true
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -155,11 +155,12 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
             switch scanState.progress {
             case .scanInProgress:
                 // TODO: maybe change color instead of hiding it
-                audioPlot.isHidden = false
+                setupPlot()
+                // audioPlot.isHidden = false
                 scanState.progressLabel.text = Strings.SCANNING
             case .scanCancelled:
-                audioPlot.isHidden = true
-                audioPlot.isHidden = false
+                // audioPlot.isHidden = true
+                // audioPlot.isHidden = false
                 scanState.progressLabel.text = Strings.CANCELLED
             case .notYetScanned:
                 scanState.deleteButton.isHidden = true
@@ -170,7 +171,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
                     scanState.progressLabel.text = Strings.NOT_YET_SCANNED
                 }
             case .finishedScanning:
-                audioPlot.isHidden = true
+                // audioPlot.isHidden = true
                 scanState.progressLabel.text = Strings.SCAN_COMPLETE
                 scanState.deleteButton.isHidden = false
                 scanState.playbackButton.isHidden = false

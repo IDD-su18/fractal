@@ -125,6 +125,7 @@
 				C9EDC45B210A968300F23F55 /* Sources */,
 				C9EDC45C210A968300F23F55 /* Frameworks */,
 				C9EDC45D210A968300F23F55 /* Resources */,
+				9A8291A999CA6B6A77258FB3 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -182,6 +183,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		9A8291A999CA6B6A77258FB3 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Audio Processor/Pods-Audio Processor-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Audio Processor/Pods-Audio Processor-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		DF5D3D19B270D54A57A1A49B /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

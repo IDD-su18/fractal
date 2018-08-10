@@ -1,16 +1,20 @@
 PODS:
+  - Alamofire (4.7.3)
   - AudioKit/UI (4.3)
 
 DEPENDENCIES:
+  - Alamofire (~> 4.7)
   - AudioKit/UI (~> 4.2)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - Alamofire
     - AudioKit
 
 SPEC CHECKSUMS:
+  Alamofire: c7287b6e5d7da964a70935e5db17046b7fde6568
   AudioKit: 95bd2427c1afa7954d71b0c6195a09b87b7448bc
 
-PODFILE CHECKSUM: b09b4ef3657794f04a6ab4708fa7262ac477c0b3
+PODFILE CHECKSUM: ad4368f93f8ea061dfb0dafec4958a3fc5a111d6
 
 COCOAPODS: 1.5.3

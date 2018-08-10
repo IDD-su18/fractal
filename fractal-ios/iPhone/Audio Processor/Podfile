@@ -7,5 +7,7 @@ target 'Audio Processor' do
 
   # Pods for Audio Processor
   pod 'AudioKit/UI', '~>4.2'
+  pod 'Alamofire', '~> 4.7'
+
 
 end
