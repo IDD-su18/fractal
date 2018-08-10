@@ -21,16 +21,13 @@ AVAudioPlayerDelegate {
     var player : AVAudioPlayer?
     var recordingExists = false
     
-    var testFile1Name = "paigeplander"
-    var testFile2Name = "planderpaige"
+    var testFile1Name = "audio1"
+    var testFile2Name = "audio2"
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Do any additional setup after loading the view.
     }
     
-
     @IBAction func record1(_ sender: Any) {
         if isRecording {
             finishRecording()
