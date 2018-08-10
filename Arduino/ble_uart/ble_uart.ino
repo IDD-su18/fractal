@@ -249,10 +249,10 @@ void toggleSoundPins(char pinNumber) {
   switch (pinNumber) {
     case '0':
     Serial.println("case 0");
-      setPinHigh(A5);
+      setPinHigh(A1);
       break;
     case '1':
-      setPinHigh(A1);
+      setPinHigh(A5);
       break;
     case '2':
       setPinHigh(A2);

@@ -9,6 +9,8 @@
 
 import UIKit
 import AVFoundation
+import AudioKit
+import AudioKitUI
 import CoreBluetooth
 
 class ScanViewController: UIViewController, AVAudioRecorderDelegate,
@@ -16,8 +18,8 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     
     var currentScanMode: ScanMode = .contralateral
     
-    let INDEX_PLAY_BTN = 0
-    let INDEX_DEL_BTN = 1
+    let INDEX_PLAY_BTN = 1
+    let INDEX_DEL_BTN = 2
 
     enum ScanMode: String {
         case contralateral
@@ -42,11 +44,18 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     @IBOutlet weak var trackIdSegControl: UISegmentedControl!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var buttonStackView: UIStackView!
-    @IBOutlet weak var calculateTransmissionRateButton: UIButton!
     @IBOutlet weak var contralateralButton: UIButton!
     @IBOutlet weak var suspectedButton: UIButton!
     @IBOutlet weak var suspectedStackView: UIStackView!
     @IBOutlet weak var contralateralStackView: UIStackView!
+    @IBOutlet weak var audioPlot: EZAudioPlot!
+    
+    
+    
+    var mic: AKMicrophone!
+    var tracker: AKFrequencyTracker!
+    var silence: AKBooster!
+    
     
     var isUsingBluetooth = false
     var hasReceiviedInitialMessage = false
@@ -68,7 +77,11 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        // bluetooth
+        // audiokit
+        AKSettings.audioInputEnabled = true
+        mic = AKMicrophone()
+        tracker = AKFrequencyTracker(mic)
+        silence = AKBooster(tracker, gain: 0)
         
         // Asking user permission for accessing Microphone
         AVAudioSession.sharedInstance().requestRecordPermission () {
@@ -87,10 +100,21 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
             peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
             
         }
-        
-        
+    
         updateIncomingData()
         setUpUI()
+        updateUI()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        AudioKit.output = silence
+        do {
+            try AudioKit.start()
+        } catch {
+            AKLog("AudioKit did not start!")
+        }
+        setupPlot()
     }
     
     func setScanMode(toMode mode: ScanMode) {
@@ -124,6 +148,16 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         
     }
     
+    func setupPlot() {
+        let plot = AKNodeOutputPlot(mic, frame: audioPlot.bounds)
+        plot.plotType = .rolling
+        plot.shouldFill = true
+        plot.shouldMirror = true
+        plot.color = UIColor.blue
+        audioPlot.addSubview(plot)
+        audioPlot.isHidden = true
+    }
+    
     override func viewDidDisappear(_ animated: Bool) {
         // peripheralManager?.stopAdvertising()
         // self.peripheralManager = nil
@@ -148,29 +182,31 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
             if contralateralRecordingExists {
                 contralateralStackView.arrangedSubviews[INDEX_DEL_BTN].isHidden = false
                 contralateralStackView.arrangedSubviews[INDEX_PLAY_BTN].isHidden = false
-                contralateralStatusLabel.text = "Scan complete"
+                contralateralStatusLabel.text = "   Scan complete"
+                audioPlot.isHidden = true
             }
             
             if !contralateralRecordingExists {
                 if currentScanMode != .contralateral {
-                    contralateralStatusLabel.text = "Not yet scanned"
+                    contralateralStatusLabel.text = "   Not yet scanned"
                 }
                 else {
-                    contralateralStatusLabel.text = "Ready to scan"
+                    contralateralStatusLabel.text = "   Ready to scan"
                 }
             }
             
             if suspectedRecordingExists {
                 suspectedStackView.arrangedSubviews[INDEX_DEL_BTN].isHidden = false
                 suspectedStackView.arrangedSubviews[INDEX_PLAY_BTN].isHidden = false
-                suspectedStatusLabel.text = "Scan complete"
+                suspectedStatusLabel.text = "   Scan complete"
+                audioPlot.isHidden = true
             }
             if !suspectedRecordingExists {
                 if currentScanMode != .suspected {
-                    suspectedStatusLabel.text = "Not yet scanned"
+                    suspectedStatusLabel.text = "   Not yet scanned"
                 }
                 else {
-                    suspectedStatusLabel.text = "Ready to scan"
+                    suspectedStatusLabel.text = "   Ready to scan"
                 }
             }
         
@@ -236,15 +272,17 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         let newAsciiText = NSMutableAttributedString(attributedString: self.consoleAsciiText!)
         switch currentScanMode {
         case .contralateral:
-            contralateralStatusLabel.text = "Scan in progress"
+            audioPlot.isHidden = false
+            contralateralStatusLabel.text = "   Scan in progress"
         default:
-            suspectedStatusLabel.text = "Scan in progress"
+            audioPlot.isHidden = false
+            suspectedStatusLabel.text = "   Scan in progress"
         }
 
         print("char ascii val =" + (characteristicASCIIValue as String))
         
         // todo: add setting for switching b/w sounds
-        recordingSeconds = 5
+        recordingSeconds = 15
         
         startRecording()
         startSelectedSoundFile()
@@ -262,11 +300,8 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
                 self.setScanMode(toMode: .contralateral)
             }
             
-            if (self.suspectedRecordingExists && self.contralateralRecordingExists) {
-                UIView.animate(withDuration: 0.5, animations: {
-                    self.calculateTransmissionRateButton.isHidden = false
-                })
-            }
+            
+        
         }
     }
     
