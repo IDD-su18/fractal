@@ -36,7 +36,6 @@ AVAudioPlayerDelegate {
             startRecording(testFile1Name)
             isRecording = true
         }
-        
     }
     
     @IBAction func play1(_ sender: Any) {
@@ -142,19 +141,15 @@ AVAudioPlayerDelegate {
         }
     }
     
-    
     // Stop recording
     func finishRecording() {
-        
         print("finish recording")
         audioRecorder?.stop()
         isRecording = false
         recordingExists = true
     }
     
-    
     func getProcessedAudio() {
-        
         guard let url = URL(string: "https://emilys-server.herokuapp.com/process_audio") else { return }
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -163,22 +158,27 @@ AVAudioPlayerDelegate {
                 print(error as Any)
                 return
             }
+        
             DispatchQueue.main.async {
                 // do whatever
-                print("dataaaa")
-                print(response)
+                print("dataa")
+                
+                do {
+                    let stringDic = try JSONSerialization.jsonObject(with: data, options: []) as? [String : Any]
+                    print(stringDic)
+                } catch let error {
+                    print(error)
+                }
+                
+             //   print(response)
+          
             }
         }
         task.resume()
-        
     }
     
-    
-    
     func postAudio(fileName: String, herokuURL: String) {
-        
         let url = getAudioFileUrl(name: fileName)
-        
         Alamofire.upload(
             multipartFormData: { multipartFormData in
                 multipartFormData.append(url, withName: fileName, fileName: fileName, mimeType: "audio/x-m4a")
@@ -196,9 +196,8 @@ AVAudioPlayerDelegate {
                 }
         }
         )
-        
     }
-    
+
     @IBAction func getdata(_ sender: Any) {
         getProcessedAudio()
     }
