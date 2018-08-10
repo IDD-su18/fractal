@@ -23,6 +23,7 @@ enum ScanProgress {
 }
 
 class ScanViewModel {
+    var filename: String
     let location: ScanLocation
     var progress: ScanProgress = .notYetScanned
     var isSelected: Bool

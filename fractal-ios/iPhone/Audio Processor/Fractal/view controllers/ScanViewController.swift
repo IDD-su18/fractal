@@ -21,6 +21,11 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     
     var contralateralScanViewModel: ScanViewModel
     var suspectedScanViewModel: ScanViewModel
+    
+    private var bothScansComplete: Bool = {
+        return contralateralScanViewModel.progress = .finishedScanning &&
+        suspectedScanViewModel.progress = .finishedScanning
+    }
 
     @IBOutlet weak var suspectedStatusLabel: UILabel!
     @IBOutlet weak var contralateralStatusLabel: UILabel!
@@ -190,7 +195,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
                 return
             }
             
-            if (self.contralateralRecordingExists && self.suspectedRecordingExists) {
+            if self.bothScansComplete {
                 self.postToHeroku()
                 return
             }
@@ -203,12 +208,8 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
             }
         }
     }
+
     
-    
-    func changeScanMode(toMode newScanMode: ScanMode) {
-        currentScanMode = newScanMode
-        updateUI()
-    }
     
     
     
@@ -218,13 +219,9 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
          * start actuator, and start recording */
         
         let newAsciiText = NSMutableAttributedString(attributedString: self.consoleAsciiText!)
-        
-        
+    
         viewModel.setScanProgress(to: .scanInProgress)
         updateUI()
-        
-        print("char ascii val =" + (characteristicASCIIValue as String))
-        
         // todo: add setting for switching b/w sounds
         recordingSeconds = 15
         
@@ -233,7 +230,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + recordingSeconds) {
             self.finishRecording()
-            self.viewModel.setScanProgress(.finishedScanning)
+            viewModel.setScanProgress(to: .finishedScanning)
             self.updateUI()
         }
     }
@@ -309,7 +306,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         // TODO
     }
     
-    func startRecording() {
+    func startRecording(viewModel: ScanViewModel) {
         //1. create the session
         let session = AVAudioSession.sharedInstance()
         
@@ -325,7 +322,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
                 AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
             ]
             // 4. create the audio recording, and assign ourselves as the delegate
-            audioRecorder = try AVAudioRecorder(url: getAudioFileUrl(), settings: settings)
+            audioRecorder = try AVAudioRecorder(url: getAudioFileUrl(viewModel: viewModel), settings: settings)
             audioRecorder?.delegate = self
             audioRecorder?.record()
             
@@ -347,11 +344,11 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     }
     
     // Path for saving/retreiving the audio file
-    func getAudioFileUrl() -> URL{
+    func getAudioFileUrl(viewModel: ScanViewModel) -> URL{
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let docsDirect = paths[0]
         
-        return docsDirect.appendingPathComponent(currentScanMode.rawValue + ".mp4")
+        return docsDirect.appendingPathComponent(viewModel.filename + ".mp4")
     }
     
     func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
