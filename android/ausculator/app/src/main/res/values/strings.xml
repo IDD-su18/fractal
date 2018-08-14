@@ -1,8 +1,0 @@
-<resources>
-    <string name="app_name">auscultator</string>
-    <string name="title_scanning">Scan in progress...</string>
-    <string name="title_fracture_detected">Fracture detected</string>
-    <string name="title_fracture_not_detected">No fracture detected</string>
-
-
-</resources>
