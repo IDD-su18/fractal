@@ -23,7 +23,7 @@ enum ScanProgress {
 }
 
 class ScanViewModel {
-    var filename: String
+    var fileName: String
     let location: ScanLocation
     var progress: ScanProgress = .notYetScanned
     var isSelected: Bool
@@ -43,8 +43,8 @@ class ScanViewModel {
         self.progress = newProgress
     }
     
-    init(filename: String, location: ScanLocation, progressLabel: UILabel, playbackButton: UIButton, bgView: UIView, deleteButton: UIButton, selectButton: UIButton) {
-        self.filename = filename
+    init(fileName: String, location: ScanLocation, progressLabel: UILabel, playbackButton: UIButton, bgView: UIView, deleteButton: UIButton, selectButton: UIButton) {
+        self.fileName = fileName
         self.location = location
         // make contralateral selected first
         self.isSelected = location == .Contralateral
@@ -58,7 +58,7 @@ class ScanViewModel {
     }
     
     convenience init() {
-        self.init(filename: "test", location: .Contralateral, progressLabel: UILabel(), playbackButton: UIButton(), bgView: UIView(), deleteButton: UIButton(), selectButton: UIButton())
+        self.init(fileName: "test", location: .Contralateral, progressLabel: UILabel(), playbackButton: UIButton(), bgView: UIView(), deleteButton: UIButton(), selectButton: UIButton())
     }
     
 }

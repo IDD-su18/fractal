@@ -40,10 +40,10 @@ class ResultsViewController: UIViewController {
         chart.delegate = self
         
         chart.minX = 0
-        chart.maxX = 1200
+        chart.maxX = 1000
         chart.minY = 0
         chart.maxY = 150
-        chart.xLabels = [0, 200, 400, 600, 800, 1000, 1200]
+        chart.xLabels = [0, 200, 400, 600, 800, 1000]
         
 
         let series1 = ChartSeries(data: data1)

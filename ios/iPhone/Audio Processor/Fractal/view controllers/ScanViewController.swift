@@ -17,10 +17,8 @@ import Alamofire
 class ScanViewController: UIViewController, AVAudioRecorderDelegate,
 AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
 
-    
     var numAudioFilesPosted = 0
-    
-    
+
     var contralateralScanViewModel = ScanViewModel()
     var suspectedScanViewModel = ScanViewModel()
 
@@ -60,22 +58,48 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        AudioKit.output = silence
+        do {
+            try AudioKit.start()
+        } catch {
+            AKLog("AudioKit did not start!")
+        }
+        setupPlot()
+        updateUI()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        // peripheralManager?.stopAdvertising()
+        // self.peripheralManager = nil
+        super.viewDidDisappear(animated)
         
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
         // set up scan view models
-        contralateralScanViewModel = ScanViewModel(filename: "audio1",
+        contralateralScanViewModel = ScanViewModel(fileName: "audio1",
                                                    location: .Contralateral,
                                                    progressLabel: contralateralStatusLabel,
                                                    playbackButton: contralateralStackView.arrangedSubviews[2] as! UIButton, bgView: contralateralBackgroundView, deleteButton: contralateralStackView.arrangedSubviews[1] as! UIButton, selectButton: contralateralButton)
         
-        suspectedScanViewModel = ScanViewModel(filename: "audio2",
-                                                   location: .Suspected,
-                                                   progressLabel: suspectedStatusLabel,
-                                                   playbackButton: suspectedStackView.arrangedSubviews[2] as! UIButton, bgView: suspectedBackgroundView, deleteButton: suspectedStackView.arrangedSubviews[1] as! UIButton, selectButton: contralateralButton)
+        suspectedScanViewModel = ScanViewModel(fileName: "audio2",
+                                               location: .Suspected,
+                                               progressLabel: suspectedStatusLabel,
+                                               playbackButton: suspectedStackView.arrangedSubviews[2] as! UIButton, bgView: suspectedBackgroundView, deleteButton: suspectedStackView.arrangedSubviews[1] as! UIButton, selectButton: contralateralButton)
         
-        
-        
+    
         // audiokit
         AKSettings.audioInputEnabled = true
+        
+        recordingExists = false
+        numAudioFilesPosted = 0
+        
         mic = AKMicrophone()
         tracker = AKFrequencyTracker(mic)
         silence = AKBooster(tracker, gain: 0)
@@ -95,31 +119,6 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
             peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
         }
         createNotificationForDataFromArduino()
-        
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        AudioKit.output = silence
-        do {
-            try AudioKit.start()
-        } catch {
-            AKLog("AudioKit did not start!")
-        }
-        setupPlot()
-        updateUI()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        // peripheralManager?.stopAdvertising()
-        // self.peripheralManager = nil
-        super.viewDidDisappear(animated)
-    
-        NotificationCenter.default.removeObserver(self)
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        recordingExists = false
         
     }
     
@@ -160,13 +159,11 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
             } else {
                 
                 UIView.animate(withDuration: 0.5, animations: {
-                
                 scanState.bgView.backgroundColor = Colors.DESELECTED_BTN
-                    })
+                })
             }
             
-            
-            
+
             switch scanState.progress {
             case .scanInProgress:
                 // TODO: maybe change color instead of hiding it
@@ -174,7 +171,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
                 scanState.progressLabel.text = Strings.SCANNING
                 UIView.animate(withDuration: 0.5, animations: {
                     scanState.bgView.backgroundColor = Colors.CANCEL_BTN
-                    })
+                })
                 
             case .scanCancelled:
                 // audioPlot.isHidden = true
@@ -197,16 +194,13 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
               
                 if !bothScansComplete() {
                     if scanState.isSelected {
+                        postAudio(fileName: contralateralScanViewModel.fileName, herokuURL: Strings.CONTRALATERAL_HEROKU_URL)
                         switchSelectedState()
                     }
                     
                 }
-                else {
-                    // janky move this later
-                    postAudio(fileName: contralateralScanViewModel.filename, herokuURL: Strings.CONTRALATERAL_HEROKU_URL)
-                }
+        
             }
-            
         }
     }
     
@@ -264,7 +258,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         // todo: add setting for switching b/w sounds
         recordingSeconds = 10
         
-        startRecording(filename: viewModel.filename)
+        startRecording(fileName: viewModel.fileName)
         startSelectedSoundFile()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + recordingSeconds) {
@@ -318,10 +312,10 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     }
     
     
-    func startRecording(filename: String) {
+    func startRecording(fileName: String) {
         //1. create the session
         
-        let url = getAudioFileUrl(name: filename)
+        let url = getAudioFileUrl(name: fileName)
         print("start recording: " + url.absoluteString)
         let session = AVAudioSession.sharedInstance()
         
@@ -388,6 +382,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     }
     
     func postAudio(fileName: String, herokuURL: String) {
+        print("posting audio for " + fileName)
         let url = getAudioFileUrl(name: fileName)
         Alamofire.upload(
             multipartFormData: { multipartFormData in
@@ -476,7 +471,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         
         
         // post contralateral
-        postAudio(fileName: suspectedScanViewModel.filename, herokuURL: Strings.SUSPECTED_HEROKU_URL)
+        postAudio(fileName: suspectedScanViewModel.fileName, herokuURL: Strings.SUSPECTED_HEROKU_URL)
         
     }
 }
