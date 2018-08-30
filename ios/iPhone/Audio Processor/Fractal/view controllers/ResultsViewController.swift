@@ -34,7 +34,7 @@ class ResultsViewController: UIViewController {
         
         navigationItem.title = "Magnitude vs. Frequency"
         parseJSON()
-        let chart = Chart(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 400))
+        let chart = Chart(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width - 40, height: 400))
         
         chart.center = view.center
         chart.delegate = self

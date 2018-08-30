@@ -58,7 +58,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -69,35 +69,42 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         } catch {
             AKLog("AudioKit did not start!")
         }
-        setupPlot()
-        updateUI()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         // peripheralManager?.stopAdvertising()
         // self.peripheralManager = nil
         super.viewDidDisappear(animated)
-        
+        if let viewWithTag = view.viewWithTag(100) {
+            viewWithTag.removeFromSuperview()
+        }
         NotificationCenter.default.removeObserver(self)
+        mic.disconnectOutput()
+        audioRecorder?.stop()
+        tracker.stop()
+        silence.stop()
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        titleLabel.text = Strings.CONTRALATERAL_READY_TITLE
         // set up scan view models
         contralateralScanViewModel = ScanViewModel(fileName: "audio1",
                                                    location: .Contralateral,
                                                    progressLabel: contralateralStatusLabel,
-                                                   playbackButton: contralateralStackView.arrangedSubviews[2] as! UIButton, bgView: contralateralBackgroundView, deleteButton: contralateralStackView.arrangedSubviews[1] as! UIButton, selectButton: contralateralButton)
+                                                   playbackButton: contralateralStackView.arrangedSubviews[1] as! UIButton, bgView: contralateralBackgroundView, deleteButton: contralateralStackView.arrangedSubviews[2] as! UIButton, selectButton: contralateralButton)
         
         suspectedScanViewModel = ScanViewModel(fileName: "audio2",
                                                location: .Suspected,
                                                progressLabel: suspectedStatusLabel,
-                                               playbackButton: suspectedStackView.arrangedSubviews[2] as! UIButton, bgView: suspectedBackgroundView, deleteButton: suspectedStackView.arrangedSubviews[1] as! UIButton, selectButton: contralateralButton)
+                                               playbackButton: suspectedStackView.arrangedSubviews[1] as! UIButton, bgView: suspectedBackgroundView, deleteButton: suspectedStackView.arrangedSubviews[2] as! UIButton, selectButton: contralateralButton)
         
     
         // audiokit
         AKSettings.audioInputEnabled = true
         
         recordingExists = false
+        isRecording = false
         numAudioFilesPosted = 0
         
         mic = AKMicrophone()
@@ -118,8 +125,10 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         if isUsingBluetooth {
             peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
         }
-        createNotificationForDataFromArduino()
         
+        updateUI()
+        setupPlot()
+        createNotificationForDataFromArduino()
     }
     
     func setupPlot() {
@@ -128,8 +137,8 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         plot.shouldFill = true
         plot.shouldMirror = true
         plot.color = UIColor.blue
+        plot.tag = 100
         audioPlot.addSubview(plot)
-        // audioPlot.isHidden = true
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -152,32 +161,26 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     func updateUI() {
         for scanState in [contralateralScanViewModel, suspectedScanViewModel] {
             
-            
             if scanState.isSelected {
                 scanState.bgView.backgroundColor = Colors.SELECTED_BTN
                 
             } else {
-                
                 UIView.animate(withDuration: 0.5, animations: {
                 scanState.bgView.backgroundColor = Colors.DESELECTED_BTN
                 })
             }
-            
-
             switch scanState.progress {
             case .scanInProgress:
-                // TODO: maybe change color instead of hiding it
-                // audioPlot.isHidden = false
+                titleLabel.text = scanState.location.rawValue + Strings.SCANNING_TITLE
                 scanState.progressLabel.text = Strings.SCANNING
                 UIView.animate(withDuration: 0.5, animations: {
                     scanState.bgView.backgroundColor = Colors.CANCEL_BTN
                 })
                 
             case .scanCancelled:
-                // audioPlot.isHidden = true
-                // audioPlot.isHidden = false
                 scanState.progressLabel.text = Strings.CANCELLED
             case .notYetScanned:
+                // TODO: implement delete button
                 scanState.deleteButton.isHidden = true
                 scanState.playbackButton.isHidden = true
                 if scanState.isSelected {
@@ -186,20 +189,27 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
                     scanState.progressLabel.text = Strings.NOT_YET_SCANNED
                 }
             case .finishedScanning:
-                // audioPlot.isHidden = true
-                scanState.progressLabel.text = Strings.SCAN_COMPLETE
-                scanState.deleteButton.isHidden = false
+                // TODO: implement delete button
+                //scanState.deleteButton.isHidden = false
                 scanState.playbackButton.isHidden = false
-                
-              
+                scanState.progressLabel.text = Strings.SCAN_COMPLETE
+            
                 if !bothScansComplete() {
+                    // if only the contralateral was scanned, post the contralateral
+                    // and make the suspected button selected
+                    // TODO: allow toggling between the two states. Not
+                    // implementing this now since it would need some server side
+                    // updates to allow replacing audio files
                     if scanState.isSelected {
+                        titleLabel.text = Strings.SUSPECTED_READY_TITLE
+                        
                         postAudio(fileName: contralateralScanViewModel.fileName, herokuURL: Strings.CONTRALATERAL_HEROKU_URL)
                         switchSelectedState()
                     }
-                    
                 }
-        
+                else {
+                    titleLabel.text = Strings.READY_TO_CALCULATE_TITLE
+                }
             }
         }
     }
@@ -227,7 +237,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
             }
             
             if self.bothScansComplete() {
-                print("both scans completE")
+                print("both scans complete")
                 self.titleLabel.text = "Calculating transmission rate"
                 self.postToHeroku()
                 return
@@ -256,7 +266,6 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         viewModel.setScanProgress(to: .scanInProgress)
         updateUI()
         // todo: add setting for switching b/w sounds
-        recordingSeconds = 10
         
         startRecording(fileName: viewModel.fileName)
         startSelectedSoundFile()
@@ -310,7 +319,6 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
     
     func startRecording(fileName: String) {
         //1. create the session
@@ -375,8 +383,10 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         if flag {
-            // TODO
+            resetPlaybackButtonUI(button: contralateralScanViewModel.playbackButton)
+            resetPlaybackButtonUI(button: suspectedScanViewModel.playbackButton)
         } else {
+            print("audio player did not stop successfully")
             // Playing interrupted by other reasons like call coming, the sound has not finished playing.
         }
     }
@@ -458,21 +468,39 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
             // couldn't load file :(
         }
     }
-    @IBAction func playContralateral(_ sender: UIButton) {
-        playSound(urlName: "audio1")
-    }
-    @IBAction func playSuspected(_ sender: UIButton) {
-        playSound(urlName: "audio2")
-    }
     
     func postToHeroku() {
         assert(bothScansComplete())
-        // post contralateral
-        
         
         // post contralateral
         postAudio(fileName: suspectedScanViewModel.fileName, herokuURL: Strings.SUSPECTED_HEROKU_URL)
         
+    }
+    
+    // MARK: playback buttons
+    @IBAction func playContralateral(_ sender: UIButton) {
+        togglePlaybackButtonUI(for: contralateralScanViewModel, button: sender)
+    }
+    
+    @IBAction func playSuspected(_ sender: UIButton) {
+        togglePlaybackButtonUI(for: suspectedScanViewModel, button: sender)
+    }
+    
+    private func togglePlaybackButtonUI(for scanViewModel: ScanViewModel, button: UIButton) {
+        if (button.titleLabel?.text?.elementsEqual(Strings.PLAY))! {
+            button.setTitle(Strings.STOP, for: .normal)
+            button.backgroundColor = Colors.CANCEL_BTN
+            playSound(urlName: scanViewModel.fileName)
+        }
+        else {
+            resetPlaybackButtonUI(button: button)
+        }
+    }
+    
+    private func resetPlaybackButtonUI(button: UIButton) {
+        player?.stop()
+         button.setTitle(Strings.PLAY, for: .normal)
+        button.backgroundColor = Colors.PLAY_BUTTON
     }
 }
 
