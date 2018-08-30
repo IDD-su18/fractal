@@ -10,6 +10,11 @@ Fractal is a low-cost, automated method of detecting and monitoring fractures wi
 - High fidelity prototype demo: https://youtu.be/3RDxQpScMgw
 - Project overview narrated slides: https://youtu.be/Qr-Yz82CwG8
 
+## Setup guides
+iOS setup guide: https://github.com/IDD-su18/fractal/blob/master/SETUP.md
+
+## Previous prototypes 
+First prototypes: https://github.com/IDD-su18/p3-paige-emily
 
 ## Hardware
 ### Actuator
