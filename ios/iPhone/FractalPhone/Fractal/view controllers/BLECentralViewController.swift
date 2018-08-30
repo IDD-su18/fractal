@@ -3,6 +3,7 @@
 //  Basic Chat
 //
 //  Created by Trevor Beaton on 11/29/16.
+//  Modified by Paige Plander
 //  Copyright © 2016 Vanguard Logic LLC. All rights reserved.
 //
 
@@ -59,7 +60,7 @@ class BLECentralViewController : UIViewController, CBCentralManagerDelegate, CBP
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        print("Stop Scanning")
+        print("Stop scanning for bluetooth devices")
         centralManager?.stopScan()
     }
     
@@ -75,7 +76,7 @@ class BLECentralViewController : UIViewController, CBCentralManagerDelegate, CBP
     
     func startScan() {
         peripherals = []
-        print("Now Scanning...")
+        print("Now scanning for bluetooth devices...")
         self.timer.invalidate()
         centralManager?.scanForPeripherals(withServices: [BLEService_UUID] , options: [CBCentralManagerScanOptionAllowDuplicatesKey:false])
         Timer.scheduledTimer(timeInterval: 17, target: self, selector: #selector(self.cancelScan), userInfo: nil, repeats: false)
@@ -84,7 +85,7 @@ class BLECentralViewController : UIViewController, CBCentralManagerDelegate, CBP
     /*We also need to stop scanning at some point so we'll also create a function that calls "stopScan"*/
     @objc func cancelScan() {
         self.centralManager?.stopScan()
-        print("Scan Stopped")
+        print("Stopped scanning for bluetooth devices")
         print("Number of Peripherals Found: \(peripherals.count)")
     }
     
@@ -123,7 +124,7 @@ class BLECentralViewController : UIViewController, CBCentralManagerDelegate, CBP
         peripheral.delegate = self
         self.baseTableView.reloadData()
         if blePeripheral == nil {
-            print("Found new pheripheral devices with services")
+            print("Found new peripheral devices with services")
             print("Peripheral name: \(String(describing: peripheral.name))")
             print("**********************************")
             print ("Advertisement Data : \(advertisementData)")
@@ -149,7 +150,7 @@ class BLECentralViewController : UIViewController, CBCentralManagerDelegate, CBP
         
         //Stop Scan- We don't need to scan once we've connected to a peripheral. We got what we came for.
         centralManager?.stopScan()
-        print("Scan Stopped")
+        print("Stopped scanning for bluetooth devices")
         
         //Erase data that we might have
         data.length = 0
