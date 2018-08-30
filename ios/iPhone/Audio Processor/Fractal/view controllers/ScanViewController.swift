@@ -201,6 +201,10 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
                     }
                     
                 }
+                else {
+                    // janky move this later
+                    postAudio(fileName: contralateralScanViewModel.filename, herokuURL: Strings.CONTRALATERAL_HEROKU_URL)
+                }
             }
             
         }
@@ -469,7 +473,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     func postToHeroku() {
         assert(bothScansComplete())
         // post contralateral
-        postAudio(fileName: contralateralScanViewModel.filename, herokuURL: Strings.CONTRALATERAL_HEROKU_URL)
+        
         
         // post contralateral
         postAudio(fileName: suspectedScanViewModel.filename, herokuURL: Strings.SUSPECTED_HEROKU_URL)
