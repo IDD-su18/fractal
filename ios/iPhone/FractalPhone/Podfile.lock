@@ -1,24 +1,29 @@
 PODS:
   - Alamofire (4.7.3)
-  - AudioKit/UI (4.3)
+  - AudioKit (4.4.0.b1):
+    - AudioKit/Core (= 4.4.0.b1)
+    - AudioKit/UI (= 4.4.0.b1)
+  - AudioKit/Core (4.4.0.b1)
+  - AudioKit/UI (4.4.0.b1)
   - SwiftChart (1.0.1)
 
 DEPENDENCIES:
   - Alamofire (~> 4.7)
-  - AudioKit/UI (~> 4.2)
+  - AudioKit (= 4.4.0.b1)
   - SwiftChart
 
 SPEC REPOS:
+  https://github.com/AudioKit/Specs.git:
+    - AudioKit
   https://github.com/cocoapods/specs.git:
     - Alamofire
-    - AudioKit
     - SwiftChart
 
 SPEC CHECKSUMS:
   Alamofire: c7287b6e5d7da964a70935e5db17046b7fde6568
-  AudioKit: 95bd2427c1afa7954d71b0c6195a09b87b7448bc
+  AudioKit: 37d567940f6e2901247804420b600c207f4ce963
   SwiftChart: ba767a678d568a5ee22d419e146a0582865e1aff
 
-PODFILE CHECKSUM: 8078dafd4576e35abf31a7d779267d0b9838de8b
+PODFILE CHECKSUM: 767eff32e9bfff676ef09705e675ccb46ffe63e5
 
 COCOAPODS: 1.5.3
