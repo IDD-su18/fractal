@@ -329,7 +329,8 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
         
         do {
             // 2. configure the session for recording and playback
-            try session.setCategory(AVAudioSessionCategoryPlayAndRecord, with: .defaultToSpeaker)
+            // make sure this is okay
+            try session.setCategory(AVAudioSession.Category(rawValue: convertFromAVAudioSessionCategory(AVAudioSession.Category.playAndRecord)), mode: .default)
             try session.setActive(true)
             // 3. set up a high-quality recording session
             let settings = [
@@ -504,3 +505,7 @@ AVAudioPlayerDelegate, CBPeripheralManagerDelegate {
     }
 }
 
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromAVAudioSessionCategory(_ input: AVAudioSession.Category) -> String {
+	return input.rawValue
+}

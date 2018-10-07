@@ -29,7 +29,6 @@ class ResultsViewController: UIViewController {
     @IBOutlet weak var transmissionRateLabel: UILabel!
     
     override func viewDidLoad() {
-    
         super.viewDidLoad()
         
         navigationItem.title = "Magnitude vs. Frequency"
@@ -44,7 +43,6 @@ class ResultsViewController: UIViewController {
         chart.minY = 0
         chart.maxY = 150
         chart.xLabels = [0, 200, 400, 600, 800, 1000]
-        
 
         let series1 = ChartSeries(data: data1)
         series1.area = true
@@ -57,14 +55,12 @@ class ResultsViewController: UIViewController {
         view.addSubview(chart)
     }
     
-    
     func parseJSON() {
         let xHealthy = jsonDict!["x_healthy"] as! [Double]
         let yHealthy = jsonDict!["y_healthy"] as! [Double]
         for i in 0..<xHealthy.count {
             data1.append((x: xHealthy[i], y: yHealthy[i]))
         }
-        
         
         var transmissionRate = (jsonDict!["tr"] as! Double)*100
         transmissionRate = transmissionRate.rounded(toPlaces: 1)
@@ -76,11 +72,9 @@ class ResultsViewController: UIViewController {
             data2.append((x: xCf[i], y: yCf[i]))
         }
     }
-    
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
     }
     
     func playSound(urlName: String){
@@ -137,8 +131,8 @@ extension ResultsViewController: ChartDelegate {
     func didTouchChart(_ chart: Chart, indexes: Array<Int?>, x: Double, left: CGFloat) {
         for (seriesIndex, dataIndex) in indexes.enumerated() {
             if dataIndex != nil {
-                // The series at `seriesIndex` is that which has been touched
-                let value = chart.valueForSeries(seriesIndex, atIndex: dataIndex)
+                // let value = chart.valueForSeries(seriesIndex, atIndex: dataIndex)
+                // do nothing for now
             }
         }
     }
@@ -150,9 +144,7 @@ extension ResultsViewController: ChartDelegate {
     func didEndTouchingChart(_ chart: Chart) {
         // Do something when ending touching chart
     }
-
 }
-
 
 extension Double {
     /// Rounds the double to decimal places value
